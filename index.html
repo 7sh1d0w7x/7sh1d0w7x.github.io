@@ -4,61 +4,92 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>7sh1d0w7x — Linux Hardening & Self-Hosted Automation</title>
-<meta name="description" content="I harden Linux servers and set up self-hosted n8n automation — hardened, documented, in 48h.">
+<meta name="description" content="I harden Linux servers and set up self-hosted n8n automation — locked down, documented, in 48h. Fixed price, before/after proof.">
+<meta property="og:title" content="Linux Hardening & Self-Hosted Automation">
+<meta property="og:description" content="Server hardening + self-hosted n8n — fixed price, documented, in 48h.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://7sh1d0w7x.github.io/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A1%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <style>
   :root{
-    --bg:#0b0f17; --panel:#0e141d; --line:#1c2634; --txt:#e6edf3;
-    --mut:#9fb0c0; --accent:#67e8f9; --accent2:#38bdf8; --good:#4ade80;
+    --bg:#0b0f17; --panel:#0e141d; --panel2:#0a1018; --line:#1c2634; --txt:#e6edf3;
+    --mut:#9fb0c0; --accent:#67e8f9; --accent2:#38bdf8; --good:#4ade80; --warn:#fbbf24;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--txt);
-    font-family:-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;line-height:1.6}
+    font-family:-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;line-height:1.65;
+    -webkit-font-smoothing:antialiased}
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  header{position:sticky;top:0;background:rgba(11,15,23,.85);backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);z-index:10}
-  .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+  header{position:sticky;top:0;background:rgba(11,15,23,.82);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);z-index:20}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
   .logo{font-weight:800;letter-spacing:.5px;font-size:18px}
   .logo .d{color:var(--accent)}
-  .nav a{margin-left:22px;color:var(--mut);font-size:15px}
-  .hero{padding:90px 0 60px;background:
-    radial-gradient(900px 500px at 20% -10%,#16233a 0%,transparent 60%)}
-  .tag{display:inline-block;font-size:13px;letter-spacing:3px;color:var(--accent);
+  .nav nav a{margin-left:20px;color:var(--mut);font-size:15px}
+  @media(max-width:700px){.nav nav a{margin-left:12px;font-size:13px}}
+  .hero{padding:84px 0 64px;background:radial-gradient(1000px 560px at 18% -12%,#16233a 0%,transparent 62%)}
+  .herogrid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+  @media(max-width:900px){.herogrid{grid-template-columns:1fr;gap:34px}}
+  .tag{display:inline-block;font-size:12.5px;letter-spacing:3px;color:var(--accent);
     border:1px solid #1e3a4a;background:#0e1a24;padding:6px 14px;border-radius:999px;font-weight:700}
-  h1{font-size:clamp(34px,5vw,58px);line-height:1.06;margin:22px 0 16px;font-weight:800;letter-spacing:-1px}
+  h1{font-size:clamp(32px,4.6vw,54px);line-height:1.06;margin:20px 0 16px;font-weight:800;letter-spacing:-1px}
   h1 .a{color:var(--accent)}
-  .lead{font-size:clamp(17px,2.2vw,21px);color:var(--mut);max-width:760px}
-  .cta{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap}
-  .btn{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:700;font-size:15px}
+  .lead{font-size:clamp(16.5px,2vw,20px);color:var(--mut);max-width:640px}
+  .cta{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:700;font-size:15px;border:1px solid transparent}
   .btn.pri{background:var(--accent);color:#06222b}
-  .btn.sec{background:var(--panel);border:1px solid var(--line);color:var(--txt)}
-  section{padding:64px 0;border-top:1px solid var(--line)}
-  h2{font-size:clamp(24px,3.4vw,34px);font-weight:800;margin-bottom:12px;letter-spacing:-.5px}
-  .sub{color:var(--mut);margin-bottom:34px;max-width:720px}
+  .btn.pri:hover{background:#a5f3fc;text-decoration:none}
+  .btn.sec{background:var(--panel);border-color:var(--line);color:var(--txt)}
+  .btn.sec:hover{border-color:var(--accent);text-decoration:none}
+  .trust{display:flex;gap:22px;flex-wrap:wrap;margin-top:26px;color:var(--mut);font-size:14px}
+  .trust b{color:var(--txt)}
+  .term{background:var(--panel2);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 24px 60px -30px #000}
+  .term .bar{display:flex;gap:7px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center}
+  .term .dot{width:11px;height:11px;border-radius:50%}
+  .term .body{padding:18px 20px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.8;color:#cfe8dd}
+  .term .body .c{color:#67e8f9}
+  .term .body .ok{color:var(--good)}
+  .term .body .bad{color:#f87171}
+  .term .body .dim{color:#6b7a8a}
+  section{padding:66px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(23px,3.2vw,33px);font-weight:800;margin-bottom:12px;letter-spacing:-.5px}
+  .sub{color:var(--mut);margin-bottom:34px;max-width:740px}
   .cards{display:grid;grid-template-columns:1fr 1fr;gap:24px}
   @media(max-width:820px){.cards{grid-template-columns:1fr}}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px 30px;display:flex;flex-direction:column}
-  .card h3{font-size:21px;margin-bottom:6px}
-  .price{font-size:15px;color:var(--accent);font-weight:800;margin-bottom:18px}
-  .card ul{list-style:none;margin-bottom:22px}
-  .card li{padding:8px 0 8px 26px;position:relative;color:#cdd8e3;font-size:15.5px;border-bottom:1px dashed #18202b}
+  .card:hover{border-color:#26384a}
+  .card h3{font-size:21px;margin-bottom:4px}
+  .price{font-size:14.5px;color:var(--accent);font-weight:800;margin-bottom:6px}
+  .deliv{font-size:13px;color:var(--mut);margin-bottom:16px}
+  .card ul{list-style:none;margin-bottom:20px}
+  .card li{padding:7px 0 7px 26px;position:relative;color:#cdd8e3;font-size:15px;border-bottom:1px dashed #161e28}
   .card li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:800}
   .card .btn{margin-top:auto}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  @media(max-width:820px){.grid3{grid-template-columns:1fr}}
-  .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
-  .box h4{margin-bottom:8px;font-size:17px}
-  .box p{color:var(--mut);font-size:15px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:860px){.grid3{grid-template-columns:1fr}}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .box h4{margin-bottom:8px;font-size:16.5px}
+  .box p{color:var(--mut);font-size:14.5px}
   .steps{counter-reset:s;display:grid;gap:14px}
   .step{display:flex;gap:16px;align-items:flex-start}
   .step .n{background:#0e1a24;border:1px solid #1e3a4a;color:var(--accent);font-weight:800;
     width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 34px}
+  .guarantee{background:linear-gradient(180deg,#0e1a24,#0b0f17);border:1px solid #1e3a4a;border-radius:18px;padding:30px 32px}
+  .guarantee h3{margin-bottom:10px}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:12px}
+  details summary{cursor:pointer;font-weight:700;font-size:16px;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary:before{content:"+ ";color:var(--accent);font-weight:800}
+  details[open] summary:before{content:"– "}
+  details p{color:var(--mut);margin-top:10px;font-size:15px}
   .mono{font-family:ui-monospace,Menlo,Consolas,monospace;color:#9fe8c0;font-size:14px;
     background:#05080d;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto}
-  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--mut);font-size:14px;
-    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-size:14px}
+  .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -68,17 +99,44 @@
   <nav>
     <a href="#services">Services</a>
     <a href="#proof">Proof</a>
+    <a href="#faq">FAQ</a>
     <a href="#contact">Contact</a>
   </nav>
 </div></header>
 
-<div class="hero"><div class="wrap">
-  <span class="tag">LINUX SECURITY · SELF-HOSTED AUTOMATION</span>
-  <h1>I harden your Linux server — <span class="a">and self-host your automation.</span></h1>
-  <p class="lead">A fresh VPS gets scanned by bots within minutes. I lock it down, document it, and — if you want — run your automation on it, self-hosted, so your data stays yours.</p>
-  <div class="cta">
-    <a class="btn pri" href="#services">See services</a>
-    <a class="btn sec" href="#contact">Get in touch</a>
+<div class="hero"><div class="wrap herogrid">
+  <div>
+    <span class="tag">LINUX SECURITY · SELF-HOSTED AUTOMATION</span>
+    <h1>I harden your Linux server — <span class="a">and self-host your automation.</span></h1>
+    <p class="lead">A fresh VPS gets scanned by bots within minutes. I lock it down, document it, and — if you want — run your automation on it, self-hosted, so your data stays yours.</p>
+    <div class="cta">
+      <a class="btn pri" href="#services">See services</a>
+      <a class="btn sec" href="#contact">Get in touch</a>
+    </div>
+    <div class="trust">
+      <span><b>48h</b> delivery</span>
+      <span><b>Fixed</b> price</span>
+      <span><b>EU</b>-based</span>
+      <span><b>Open-source</b> tools</span>
+    </div>
+  </div>
+
+  <div class="term">
+    <div class="bar" style="background:#0d1420">
+      <span class="dot" style="background:#ff5f56"></span>
+      <span class="dot" style="background:#ffbd2e"></span>
+      <span class="dot" style="background:#27c93f"></span>
+      <span style="color:#6b7a8a;font-size:12.5px;margin-left:8px;font-family:ui-monospace,monospace">state-witness check</span>
+    </div>
+    <div class="body">
+      <span class="dim">$</span> <span class="c">state-witness</span> check<br>
+      <span class="ok">✔</span> sshd        <span class="dim">keys-only, root login disabled</span><br>
+      <span class="ok">✔</span> firewall    <span class="dim">default-deny — 22, 443 open</span><br>
+      <span class="ok">✔</span> users       <span class="dim">1 sudo, no empty passwords</span><br>
+      <span class="bad">✖</span> sysctl      <span class="dim">rp_filter disabled</span><br>
+      <span class="dim">&nbsp;</span><br>
+      <span class="c">→ 3 passed · 1 issue</span> <span class="dim">— fix queued, report ready</span>
+    </div>
   </div>
 </div></div>
 
@@ -90,11 +148,12 @@
     <div class="card">
       <h3>Server Hardening</h3>
       <div class="price">from €299 / server · delivered in 48h</div>
+      <div class="deliv">Deliverables: hardened host + before/after report + rollback notes</div>
       <ul>
         <li>SSH locked to keys only (no root, no passwords)</li>
         <li>Firewall — default-deny, only what you need</li>
         <li>fail2ban + automatic security updates + sane sysctl</li>
-        <li>Before/after report + exactly how to roll back</li>
+        <li>Before/after report — what was exposed, what I fixed</li>
         <li>Optional: Nginx, SSL, Docker, monitoring</li>
       </ul>
       <a class="btn pri" href="#contact">Harden my server</a>
@@ -103,11 +162,12 @@
     <div class="card">
       <h3>Self-Hosted n8n</h3>
       <div class="price">from €400 setup · from €500 / workflow</div>
+      <div class="deliv">Deliverables: n8n on your server + 1 workflow + backup + docs</div>
       <ul>
         <li>n8n deployed on <b>your own server</b> (Docker + Postgres + SSL)</li>
         <li>Your data stays in the EU — €0 monthly SaaS fee</li>
         <li>Workflows: form → CRM, invoices, reminders, LLM summaries</li>
-        <li>Hardened host + backup + monitoring</li>
+        <li>Hardened host + backup + monitoring included</li>
         <li>Migrate from Zapier/Make and cut the bill</li>
       </ul>
       <a class="btn pri" href="#contact">Set up my n8n</a>
@@ -115,10 +175,18 @@
 
   </div>
 
-  <div class="grid3" style="margin-top:24px">
+  <div class="grid3" style="margin-top:22px">
     <div class="box"><h4>Backup + tested restore</h4><p>3-2-1 backup with a real <b>restore test</b> — proof it comes back, not “job completed”.</p></div>
     <div class="box"><h4>Monitoring retainer</h4><p>Uptime + alerts + patching, monthly. See problems before your customers do.</p></div>
     <div class="box"><h4>Container / Docker hardening</h4><p>Non-root, dropped capabilities, read-only FS, image provenance, secrets.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="guarantee">
+    <h3>🛡️ My guarantee</h3>
+    <p style="color:var(--mut)">If I run the audit and find nothing worth fixing on your server, you don't pay. I'd rather be honest than bill you for nothing.</p>
+    <p style="color:var(--mut);margin-top:8px">Your data stays yours — read-only on anything sensitive, nothing sent anywhere.</p>
   </div>
 </div></section>
 
@@ -127,7 +195,7 @@
   <p class="sub">I build the tools I use. Open source, tested, public.</p>
   <div class="grid3">
     <div class="box"><h4>state-witness</h4><p>Open-source security auditor for Linux (Rust) — SSH, firewall, users, sysctl. The same checks I run on your server.</p><p style="margin-top:10px"><a href="https://github.com/7sh1d0w7x/state-witness">github.com/7sh1d0w7x/state-witness</a></p></div>
-    <div class="box"><h4>linux-doctor</h4><p>Read-only Linux health checks that explain problems and remember what changed. 13★.</p><p style="margin-top:10px"><a href="https://github.com/7sh1d0w7x/linux-doctor">github.com/7sh1d0w7x/linux-doctor</a></p></div>
+    <div class="box"><h4>linux-doctor</h4><p>Read-only Linux health checks that explain problems and remember what changed. 13★ on GitHub.</p><p style="margin-top:10px"><a href="https://github.com/7sh1d0w7x/linux-doctor">github.com/7sh1d0w7x/linux-doctor</a></p></div>
     <div class="box"><h4>n8n templates</h4><p>Self-hosted automation workflows — security log analysis, uptime monitoring, job alerts.</p><p style="margin-top:10px"><a href="https://github.com/7sh1d0w7x">github.com/7sh1d0w7x</a></p></div>
   </div>
 </div></section>
@@ -138,24 +206,36 @@
     <div class="step"><div class="n">1</div><div>Tell me your setup — distro, what you run, what worries you.</div></div>
     <div class="step"><div class="n">2</div><div>I give you a fixed scope and a fixed price. No surprises.</div></div>
     <div class="step"><div class="n">3</div><div>I set it up, secure it, and document it — usually in 2–3 days.</div></div>
-    <div class="step"><div class="n">4</div><div>You get the keys + a short report (and backup, if you want).</div></div>
+    <div class="step"><div class="n">4</div><div>You get the keys + a short report (and a tested backup, if you want).</div></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>FAQ</h2>
+  <div style="margin-top:14px">
+    <details><summary>What server do I need?</summary><p>Any Debian/Ubuntu VPS or bare-metal box (Hetzner, DigitalOcean, a VPS from your host). I work over SSH — you don't have to do anything.</p></details>
+    <details><summary>How do I pay?</summary><p>Fixed price, agreed up front. Milestone-based — you approve the scope before I start.</p></details>
+    <details><summary>Will it break my running site?</summary><p>No. I take a snapshot first, work read-only where possible, and document every change plus how to roll back.</p></details>
+    <details><summary>Can you do both — harden and automate?</summary><p>Yes, that's the sweet spot: n8n self-hosted on a server that's actually locked down. Cheaper bundled.</p></details>
+    <details><summary>Do you use my data?</summary><p>No. Everything stays on your infrastructure; I don't route anything through third parties.</p></details>
   </div>
 </div></section>
 
 <section id="contact"><div class="wrap">
   <h2>Get in touch</h2>
-  <p class="sub">Not sure what you need? Message me with your setup — I'll tell you honestly what I'd do.</p>
+  <p class="sub">Not sure what you need? Message me with your setup — I'll tell you honestly what I'd do. No sales pressure.</p>
   <div class="mono">
     email:   zshadowdev@duck.com
     github:  github.com/7sh1d0w7x
   </div>
   <div class="cta">
-    <a class="btn pri" href="mailto:zshadowdev@duck.com">Email me</a>
+    <a class="btn pri" href="mailto:zshadowdev@duck.com?subject=Server%20hardening%20/%20n8n%20setup">Email me</a>
     <a class="btn sec" href="https://github.com/7sh1d0w7x">GitHub</a>
   </div>
+  <p style="color:var(--mut);font-size:14px;margin-top:16px">Tip: tell me your distro + what you run, and I'll reply with a fixed price.</p>
 </div></section>
 
-<footer><div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px">
+<footer><div class="wrap foot">
   <span>© <span id="y"></span> 7sh1d0w7x · Linux security & self-hosted automation</span>
   <span>Timisoara, Romania · remote</span>
 </div></footer>
