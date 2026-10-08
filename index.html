@@ -88,6 +88,13 @@
   details p{color:var(--mut);margin-top:10px;font-size:15px}
   .mono{font-family:ui-monospace,Menlo,Consolas,monospace;color:#9fe8c0;font-size:14px;
     background:#05080d;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto}
+  .funnel{display:flex;align-items:stretch;flex-wrap:wrap}
+  .fstep{flex:1;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .fstep h4{margin:10px 0 6px;font-size:17px}
+  .fstep p{color:var(--mut);font-size:14.5px}
+  .fbadge{display:inline-block;font-size:11px;letter-spacing:2px;color:var(--accent);border:1px solid #1e3a4a;background:#0e1a24;padding:3px 10px;border-radius:999px;font-weight:700}
+  .farrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:26px;padding:0 12px;font-weight:800}
+  @media(max-width:860px){.farrow{transform:rotate(90deg);padding:6px 0;width:100%}}
   footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-size:14px}
   .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 </style>
@@ -193,6 +200,30 @@
     <h3>🛡️ My guarantee</h3>
     <p style="color:var(--mut)">If I run the audit and find nothing worth fixing on your server, you don't pay. I'd rather be honest than bill you for nothing.</p>
     <p style="color:var(--mut);margin-top:8px">Your data stays yours — read-only on anything sensitive, nothing sent anywhere.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>How the pieces fit</h2>
+  <p class="sub">Start small, grow only if it's worth it. Every step sets up the next — and the first one costs less than a takeaway.</p>
+  <div class="funnel">
+    <div class="fstep">
+      <span class="fbadge">START</span>
+      <h4>Health Check · €99</h4>
+      <p>I run <b>linux-doctor</b> on your server and hand you a prioritized report — what's wrong and what to fix first.</p>
+    </div>
+    <div class="farrow">→</div>
+    <div class="fstep">
+      <span class="fbadge">STEP 2</span>
+      <h4>Hardening · €299+</h4>
+      <p>I fix the issues and lock the server down (SSH, firewall, updates). The €99 is credited toward this.</p>
+    </div>
+    <div class="farrow">→</div>
+    <div class="fstep">
+      <span class="fbadge">ONGOING</span>
+      <h4>Monitoring · €150–900/mo</h4>
+      <p>Uptime, alerts, backups and patching — so it <b>stays</b> safe after I leave.</p>
+    </div>
   </div>
 </div></section>
 
