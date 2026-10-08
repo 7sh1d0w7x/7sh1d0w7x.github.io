@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Work — 7sh1d0w7x</title>
+<meta name="description" content="Case studies: tested backup & recovery, self-hosted n8n automation, and open-source Linux security tooling.">
+<meta property="og:title" content="Work — proof, not promises">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A0%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+  :root{--bg:#0b0f17;--panel:#0e141d;--panel2:#0a1018;--line:#1c2634;--txt:#e6edf3;
+    --mut:#9fb0c0;--accent:#67e8f9;--good:#4ade80;--warn:#fbbf24;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;
+    line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+  .wrap{max-width:1050px;margin:0 auto;padding:0 24px}
+  header{position:sticky;top:0;background:rgba(11,15,23,.82);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);z-index:20}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+  .logo{font-weight:800;font-size:18px}.logo .d{color:var(--accent)}
+  .nav a{color:var(--mut);font-size:15px}
+  .hero{padding:80px 0 40px;background:radial-gradient(900px 500px at 18% -12%,#16233a 0%,transparent 62%)}
+  h1{font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-1px;line-height:1.06;margin-bottom:14px}
+  h1 .a{color:var(--accent)}
+  .lead{font-size:clamp(16px,2vw,20px);color:var(--mut);max-width:680px}
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  .case{display:grid;grid-template-columns:1fr 1.1fr;gap:38px;align-items:center}
+  .case.rev{grid-template-columns:1.1fr 1fr}
+  .case.rev .media{order:-1}
+  @media(max-width:880px){.case,.case.rev{grid-template-columns:1fr;gap:22px}.case.rev .media{order:0}}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:2.5px;color:var(--accent);
+    border:1px solid #1e3a4a;background:#0e1a24;padding:5px 12px;border-radius:999px;font-weight:700;margin-bottom:14px}
+  h2{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.5px;margin-bottom:12px}
+  .case p{color:var(--mut);margin-bottom:12px;font-size:15.5px}
+  .pf{display:grid;gap:10px;margin-top:6px}
+  .pf div{display:flex;gap:12px;align-items:flex-start;font-size:14.7px;color:#cdd8e3}
+  .pf .lbl{color:var(--accent);font-weight:800;min-width:92px;flex:0 0 92px;letter-spacing:.5px;text-transform:uppercase;font-size:12px;padding-top:2px}
+  .media img{width:100%;border-radius:16px;border:1px solid var(--line);display:block;background:#05080d}
+  .media img+img{margin-top:16px}
+  .tag{color:var(--good);font-weight:700}
+  .cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:700;font-size:15px;border:1px solid transparent}
+  .btn.pri{background:var(--accent);color:#06222b}.btn.pri:hover{background:#a5f3fc;text-decoration:none}
+  .btn.sec{background:var(--panel);border-color:var(--line);color:var(--txt)}.btn.sec:hover{border-color:var(--accent);text-decoration:none}
+  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mut);font-size:14px}
+  .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<header><div class="wrap nav">
+  <div class="logo">7sh1d0w<span class="d">7x</span></div>
+  <a href="/">← back to services</a>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <h1>Work — <span class="a">proof, not promises.</span></h1>
+  <p class="lead">Real deliverables I've built: tested backups, self-hosted automation, and open-source security tooling. Each one is something I actually run.</p>
+  <div class="cta">
+    <a class="btn pri" href="/#contact">Work with me</a>
+    <a class="btn sec" href="https://github.com/7sh1d0w7x">All my code on GitHub</a>
+  </div>
+</div></div>
+
+<section><div class="wrap case">
+  <div>
+    <span class="kicker">RESILIENCE</span>
+    <h2>Tested Backup &amp; Recovery</h2>
+    <p>“Everyone has a backup. Almost nobody has <i>tested</i> a restore.”</p>
+    <div class="pf">
+      <div><span class="lbl">Problem</span><span>An untested backup is an illusion — you find out it's broken the day you need it.</span></div>
+      <div><span class="lbl">What I did</span><span>3-2-1 backup with restic + systemd timers, and an <b>automated restore test</b> that verifies the data comes back byte-for-byte.</span></div>
+      <div><span class="lbl">Proof</span><span>Real output: <span class="tag">“restore identical to the original”</span> — not “job completed”.</span></div>
+    </div>
+  </div>
+  <div class="media"><img src="/img/backup.png" alt="Tested Backup case study"></div>
+</div></section>
+
+<section><div class="wrap case rev">
+  <div>
+    <span class="kicker">AUTOMATION</span>
+    <h2>Self-Hosted n8n Automation</h2>
+    <p>Automation that runs on <b>your</b> server — data stays in the EU, no monthly SaaS bill.</p>
+    <div class="pf">
+      <div><span class="lbl">Problem</span><span>Cloud tools charge monthly and move your data to someone else's servers.</span></div>
+      <div><span class="lbl">What I did</span><span>n8n self-hosted (Docker + Postgres + SSL) on a hardened host, plus workflows: security-log analysis, multi-service uptime, job alerts.</span></div>
+      <div><span class="lbl">Proof</span><span>Working workflows with error handling — tested for failure points, not just “it runs”.</span></div>
+    </div>
+  </div>
+  <div class="media"><img src="/img/n8n.png" alt="n8n self-hosted workflow"></div>
+</div></section>
+
+<section><div class="wrap">
+  <span class="kicker">OPEN SOURCE</span>
+  <h2>Security &amp; diagnostics tooling</h2>
+  <p style="color:var(--mut);max-width:760px;margin-bottom:26px">The tools I use on client servers — built in the open, so you can read the code before trusting it.</p>
+  <div class="case" style="align-items:start">
+    <div class="media"><img src="/img/state-witness.png" alt="state-witness repository"></div>
+    <div>
+      <h2 style="font-size:22px">state-witness</h2>
+      <p>A security auditor for Linux (written in Rust) that checks what the host <b>actually</b> enforces: SSH, firewall, users, sysctl. Built for immutable Linux (Fedora Atomic, Bazzite, bootc).</p>
+      <p><a href="https://github.com/7sh1d0w7x/state-witness">github.com/7sh1d0w7x/state-witness →</a></p>
+      <div style="height:22px"></div>
+      <div class="media"><img src="/img/linux-doctor.png" alt="linux-doctor repository"></div>
+      <div style="height:14px"></div>
+      <h2 style="font-size:22px">linux-doctor</h2>
+      <p>Read-only health checks that explain problems and remember what changed. <b>13★</b> on GitHub.</p>
+      <p><a href="https://github.com/7sh1d0w7x/linux-doctor">github.com/7sh1d0w7x/linux-doctor →</a></p>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap" style="text-align:center">
+  <h2>Want this done on your server?</h2>
+  <p style="color:var(--mut);max-width:620px;margin:0 auto 22px">Start with a €99 Health Check, or go straight to hardening. Fixed price, documented, in 48h.</p>
+  <a class="btn pri" href="/#contact">Get in touch</a>
+</div></section>
+
+<footer><div class="wrap foot">
+  <span>© <span id="y"></span> 7sh1d0w7x · Linux security & self-hosted automation</span>
+  <span>Timisoara, Romania · remote</span>
+</div></footer>
+<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</body>
+</html>
