@@ -88,6 +88,17 @@
   details p{color:var(--mut);margin-top:10px;font-size:15px}
   .mono{font-family:ui-monospace,Menlo,Consolas,monospace;color:#9fe8c0;font-size:14px;
     background:#05080d;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto}
+  form{display:grid;gap:14px;max-width:580px;margin-top:22px}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:620px){.frow{grid-template-columns:1fr}}
+  label{font-size:13px;color:var(--mut);display:block;margin-bottom:6px}
+  input,textarea{width:100%;background:#05080d;border:1px solid var(--line);border-radius:10px;
+    color:var(--txt);padding:12px 14px;font-size:15px;font-family:inherit}
+  input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  textarea{min-height:120px;resize:vertical}
+  button.btn{cursor:pointer;font-family:inherit}
+  .early{background:linear-gradient(180deg,#0e1a24,#0b0f17);border:1px solid #1e3a4a;
+    border-radius:18px;padding:30px 32px;text-align:center}
   .funnel{display:flex;align-items:stretch;flex-wrap:wrap}
   .fstep{flex:1;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
   .fstep h4{margin:10px 0 6px;font-size:17px}
@@ -259,18 +270,26 @@
   </div>
 </div></section>
 
+<section><div class="wrap">
+  <div class="early">
+    <h3>⭐ Be one of my first clients</h3>
+    <p style="color:var(--mut);max-width:640px;margin:10px auto 0">I'm building my client list. Early clients get <b>20% off</b> in exchange for an honest testimonial once the work is done. Same quality, lower price — you just help me get started.</p>
+  </div>
+</div></section>
+
 <section id="contact"><div class="wrap">
   <h2>Get in touch</h2>
-  <p class="sub">Not sure what you need? Message me with your setup — I'll tell you honestly what I'd do. No sales pressure.</p>
-  <div class="mono">
-    email:   zshadowdev@duck.com
-    github:  github.com/7sh1d0w7x
-  </div>
-  <div class="cta">
-    <a class="btn pri" href="mailto:zshadowdev@duck.com?subject=Server%20hardening%20/%20n8n%20setup">Email me</a>
-    <a class="btn sec" href="https://github.com/7sh1d0w7x">GitHub</a>
-  </div>
-  <p style="color:var(--mut);font-size:14px;margin-top:16px">Tip: tell me your distro + what you run, and I'll reply with a fixed price.</p>
+  <p class="sub">Tell me your setup and I'll reply with a fixed price — no sales pressure. Or just email <a href="mailto:zshadowdev@duck.com">zshadowdev@duck.com</a>.</p>
+  <form id="cform" novalidate>
+    <div class="frow">
+      <div><label for="name">Name</label><input id="name" name="name" type="text" placeholder="Your name" required></div>
+      <div><label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com" required></div>
+    </div>
+    <div><label for="setup">Your setup</label><input id="setup" name="setup" type="text" placeholder="e.g. Ubuntu 24.04 VPS on Hetzner, Nginx + Docker"></div>
+    <div><label for="msg">What do you need?</label><textarea id="msg" name="msg" placeholder="Server hardening · n8n self-hosted · monitoring · not sure yet…"></textarea></div>
+    <div><button class="btn pri" type="submit">Send message</button></div>
+  </form>
+  <p style="color:var(--mut);font-size:14px;margin-top:14px">Opens your email app with the message ready — nothing is stored on the site.</p>
 </div></section>
 
 <footer><div class="wrap foot">
@@ -278,6 +297,19 @@
   <span>Timisoara, Romania · remote</span>
 </div></footer>
 
-<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+<script>
+  document.getElementById('y').textContent = new Date().getFullYear();
+  var cform = document.getElementById('cform');
+  if (cform) cform.addEventListener('submit', function(e){
+    e.preventDefault();
+    var f = e.target;
+    var subject = encodeURIComponent('Server work — ' + (f.name.value || 'enquiry'));
+    var body = encodeURIComponent(
+      'Name: ' + f.name.value + '\n' +
+      'Email: ' + f.email.value + '\n' +
+      'Setup: ' + f.setup.value + '\n\n' + f.msg.value);
+    window.location.href = 'mailto:zshadowdev@duck.com?subject=' + subject + '&body=' + body;
+  });
+</script>
 </body>
 </html>
