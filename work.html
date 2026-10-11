@@ -53,6 +53,13 @@
   .cta p{color:var(--mut);max-width:600px;margin:0 auto 20px}
   footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mut);font-size:13px;font-family:"JetBrains Mono",monospace}
   .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  @media(max-width:700px){
+    .nav{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 0}
+    .nav nav{display:flex;flex-wrap:wrap;gap:4px 16px}
+    .nav nav a,.nav a{margin-left:0;font-size:12.5px}
+  }
+  a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:3px}
 </style>
 </head>
 <body>
