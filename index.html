@@ -16,7 +16,7 @@
     --ink:#e6ece7; --mut:#8b978f; --acc:#ffb454; --ok:#5ce08a; --bad:#ff6b6b;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;scroll-padding-top:84px}
   body{
     background:var(--bg);color:var(--ink);
     font-family:"Inter",system-ui,sans-serif;line-height:1.7;font-size:16px;
@@ -310,6 +310,11 @@
   if (cform) cform.addEventListener('submit', function(e){
     e.preventDefault();
     var f = e.target;
+    if (!f.name.value.trim() || !f.email.value.trim() || !/.+@.+\..+/.test(f.email.value)) {
+      f.reportValidity ? f.reportValidity() : alert('Please add your name and a valid email.');
+      (f.name.value.trim() ? f.email : f.name).focus();
+      return;
+    }
     var subject = encodeURIComponent('Server work — ' + (f.name.value || 'enquiry'));
     var body = encodeURIComponent('Name: '+f.name.value+'\nEmail: '+f.email.value+'\nSetup: '+f.setup.value+'\n\n'+f.msg.value);
     window.location.href = 'mailto:zshadowdev@duck.com?subject=' + subject + '&body=' + body;
