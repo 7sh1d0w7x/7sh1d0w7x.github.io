@@ -5,62 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Work — 7sh1d0w7x</title>
 <meta name="description" content="Case studies: tested backup & recovery, self-hosted n8n automation, and open-source Linux security tooling.">
+<meta name="theme-color" content="#0a0c0b">
+<link rel="canonical" href="https://7sh1d0w7x.github.io/work.html">
+<meta property="og:site_name" content="7sh1d0w7x">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Work — 7sh1d0w7x">
+<meta property="og:description" content="Case studies: tested backup & recovery, self-hosted n8n automation, and open-source Linux security tooling.">
+<meta property="og:url" content="https://7sh1d0w7x.github.io/work.html">
+<meta property="og:image" content="https://7sh1d0w7x.github.io/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Work — 7sh1d0w7x">
+<meta name="twitter:description" content="Case studies: tested backup & recovery, self-hosted n8n automation, and open-source Linux security tooling.">
+<meta name="twitter:image" content="https://7sh1d0w7x.github.io/img/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c0b'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='monospace' font-size='15' fill='%23ffb454'%3E7%3C/text%3E%3C/svg%3E">
-<style>
-  :root{--bg:#0a0c0b;--panel:#0f1211;--line:#1d2421;--line2:#26302b;
-    --ink:#e6ece7;--mut:#8b978f;--acc:#ffb454;--ok:#5ce08a;--bad:#ff6b6b;}
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:84px}
-  body{background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;line-height:1.7;font-size:16px;
-    -webkit-font-smoothing:antialiased;
-    background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-    background-size:30px 30px}
-  h1,h2,h3,.mono,.eyebrow,.brand,.b,.idx,.lbl{font-family:"JetBrains Mono",ui-monospace,monospace}
-  a{color:inherit;text-decoration:none}.u{color:var(--acc)}.u:hover{text-decoration:underline}
-  .wrap{max-width:1060px;margin:0 auto;padding:0 26px}
-  header{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(10,12,11,.86);backdrop-filter:blur(10px);z-index:20}
-  .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
-  .brand{font-weight:700;font-size:17px}.brand b{color:var(--acc)}
-  .nav a{color:var(--mut);font-size:13.5px;font-family:"JetBrains Mono",monospace}.nav a:hover{color:var(--acc)}
-  .hero{padding:82px 0 46px}
-  .eyebrow{font-size:12.5px;letter-spacing:.14em;color:var(--acc);margin-bottom:18px}.eyebrow:before{content:"// "}
-  h1{font-size:clamp(32px,4.8vw,50px);font-weight:700;letter-spacing:-.02em;line-height:1.12}
-  h1 .a{color:var(--acc)}
-  .lead{margin-top:20px;font-size:18px;color:var(--mut);max-width:660px}
-  .btns{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap}
-  .b{display:inline-block;padding:12px 20px;font-size:14px;font-weight:500;border:1px solid var(--line2);border-radius:6px;transition:.16s;cursor:pointer}
-  .b-pri{background:var(--acc);color:#0a0c0b;border-color:var(--acc);font-weight:700}.b-pri:hover{background:#ffc978}
-  .b-line{color:var(--ink)}.b-line:hover{border-color:var(--acc);color:var(--acc)}
-  section{padding:60px 0;border-top:1px solid var(--line)}
-  .case{display:grid;grid-template-columns:1fr 1.05fr;gap:42px;align-items:center}
-  .case.rev .media{order:-1}
-  @media(max-width:880px){.case{grid-template-columns:1fr;gap:24px}.case.rev .media{order:0}}
-  .idx{display:inline-block;font-size:12.5px;color:var(--acc);margin-bottom:12px}
-  h2{font-size:clamp(22px,3vw,30px);font-weight:700;letter-spacing:-.02em;margin-bottom:12px}
-  .case>div>p{color:var(--mut);margin-bottom:16px;font-size:15.5px}
-  .pf{display:grid;gap:12px}
-  .pf .row{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start}
-  .lbl{color:var(--acc);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;padding-top:3px}
-  .pf .row div:last-child{color:#c2ccc6;font-size:15px}
-  .media img{width:100%;border-radius:10px;border:1px solid var(--line);display:block;background:#050706}
-  .media img+img{margin-top:16px}
-  .tag{color:var(--ok);font-family:"JetBrains Mono",monospace;font-size:13.5px}
-  .cta{margin-top:60px;text-align:center;border:1px dashed var(--line2);border-radius:10px;padding:34px 28px;background:var(--panel)}
-  .cta h2{margin-bottom:10px}
-  .cta p{color:var(--mut);max-width:600px;margin:0 auto 20px}
-  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mut);font-size:13px;font-family:"JetBrains Mono",monospace}
-  .foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-
-  @media(max-width:700px){
-    .nav{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 0}
-    .nav nav{display:flex;flex-wrap:wrap;gap:4px 16px}
-    .nav nav a,.nav a{margin-left:0;font-size:12.5px}
-  }
-  a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:3px}
-</style>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
@@ -82,7 +45,7 @@
   <p class="lead">Real deliverables I've built: tested backups, self-hosted automation, and open-source security tooling. Each one is something I actually run.</p>
   <div class="btns">
     <a class="b b-pri" href="/#contact">./work-with-me</a>
-    <a class="b b-line" href="https://github.com/7sh1d0w7x">./all-my-code</a>
+    <a class="b b-line" href="https://github.com/7sh1d0w7x" target="_blank" rel="noopener">./all-my-code</a>
   </div>
 </div></div>
 
@@ -123,13 +86,13 @@
     <div>
       <h2 style="font-size:20px">./state-witness</h2>
       <p style="color:var(--mut);font-size:15px;margin-bottom:8px">A security auditor for Linux (Rust) that checks what the host <b>actually</b> enforces: SSH, firewall, users, sysctl. Built for immutable Linux (Fedora Atomic, Bazzite, bootc).</p>
-      <p><a class="u" href="https://github.com/7sh1d0w7x/state-witness">github/state-witness ↗</a></p>
+      <p><a class="u" href="https://github.com/7sh1d0w7x/state-witness" target="_blank" rel="noopener">github/state-witness ↗</a></p>
       <div style="height:26px"></div>
       <div class="media"><img src="/img/linux-doctor.png" alt="linux-doctor repository"></div>
       <div style="height:16px"></div>
       <h2 style="font-size:20px">./linux-doctor</h2>
       <p style="color:var(--mut);font-size:15px;margin-bottom:8px">Read-only health checks that explain problems and remember what changed. <b>13★</b> on GitHub.</p>
-      <p><a class="u" href="https://github.com/7sh1d0w7x/linux-doctor">github/linux-doctor ↗</a></p>
+      <p><a class="u" href="https://github.com/7sh1d0w7x/linux-doctor" target="_blank" rel="noopener">github/linux-doctor ↗</a></p>
     </div>
   </div>
 </div></section>
@@ -142,7 +105,7 @@
 
 <footer><div class="wrap foot">
   <span>© <span id="y"></span> 7sh1d0w7x — secure self-hosted &amp; AI/MCP security</span>
-  <span><a class="u" href="https://github.com/7sh1d0w7x">github</a> · timisoara, ro · remote</span>
+  <span><a class="u" href="https://github.com/7sh1d0w7x" target="_blank" rel="noopener">github</a> · timisoara, ro · remote</span>
 </div></footer>
 <script>document.getElementById('y').textContent=new Date().getFullYear();</script>
 </body>
