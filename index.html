@@ -111,8 +111,9 @@
   .farrow{color:var(--acc);font-family:"JetBrains Mono",monospace;font-size:20px;padding:0 6px}
   @media(max-width:860px){.farrow{display:none}}
 
-  .proof{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:40px}
+  .proof{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-top:40px}
   @media(max-width:800px){.proof{grid-template-columns:1fr}}
+  .proof img{width:100%;display:block;border:1px solid var(--line2);border-radius:10px;margin-bottom:14px;background:#0d1117}
   .proof h4{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:16px;margin-bottom:6px}
   .proof h4:before{content:"./";color:var(--acc)}
   .proof p{color:var(--mut);font-size:14.5px}
@@ -250,10 +251,10 @@
   <div class="shead"><span class="idx">[03]</span><h2>Proof, not promises</h2></div>
   <p class="sub">I build the tools I use. Open source, tested, public.</p>
   <div class="proof">
-    <div><h4>state-witness</h4><p>A security auditor for Linux (Rust) — SSH, firewall, users, sysctl. The same checks I run on your server.</p><p style="margin-top:10px"><a class="u" href="https://github.com/7sh1d0w7x/state-witness">github/state-witness ↗</a></p></div>
-    <div><h4>linux-doctor</h4><p>Read-only Linux health checks that explain problems and remember what changed. 13★.</p><p style="margin-top:10px"><a class="u" href="/linux-doctor.html">read more ↗</a></p></div>
-    <div><h4>case-studies</h4><p>Tested backup, self-hosted automation, and the tooling behind them.</p><p style="margin-top:10px"><a class="u" href="/work.html">see the work ↗</a></p></div>
+    <div><img src="/img/state-witness.gif" alt="state-witness running in a terminal: deployment checks, sysctl hardening, firewall" loading="lazy"><h4>state-witness</h4><p>A security auditor for Linux (Rust) — SSH, firewall, users, sysctl. The same checks I run on your server.</p><p style="margin-top:10px"><a class="u" href="https://github.com/7sh1d0w7x/state-witness">github/state-witness ↗</a></p></div>
+    <div><img src="/img/linux-doctor.gif" alt="linux-doctor running in a terminal: health score, START HERE action, findings with fixes" loading="lazy"><h4>linux-doctor</h4><p>Read-only Linux health checks that explain problems and remember what changed. 13★.</p><p style="margin-top:10px"><a class="u" href="/linux-doctor.html">read more ↗</a></p></div>
   </div>
+  <p style="margin-top:28px"><a class="u" href="/work.html">case-studies — tested backup, self-hosted automation, and the tooling behind them ↗</a></p>
 </div></section>
 
 <section id="faq"><div class="wrap">
