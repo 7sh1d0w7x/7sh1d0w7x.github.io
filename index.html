@@ -114,6 +114,11 @@
   .proof{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-top:40px}
   @media(max-width:800px){.proof{grid-template-columns:1fr}}
   .proof img{width:100%;display:block;border:1px solid var(--line2);border-radius:10px;margin-bottom:14px;background:#0d1117}
+  .about{display:grid;grid-template-columns:160px 1fr;gap:22px;align-items:start;margin-top:26px;padding:20px;border:1px solid var(--line2);border-radius:12px;background:var(--panel)}
+  .about img{width:160px;height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--line2);display:block}
+  .about p{color:var(--mut);font-size:14.5px}
+  .about p+p{margin-top:8px}
+  @media(max-width:800px){.about{grid-template-columns:1fr}.about img{width:120px;height:120px}}
   .proof h4{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:16px;margin-bottom:6px}
   .proof h4:before{content:"./";color:var(--acc)}
   .proof p{color:var(--mut);font-size:14.5px}
@@ -249,6 +254,13 @@
 
 <section id="proof"><div class="wrap">
   <div class="shead"><span class="idx">[03]</span><h2>Proof, not promises</h2></div>
+  <div class="about">
+    <img src="/img/raul.jpg" alt="Raul — Linux security &amp; self-hosted automation" loading="lazy">
+    <div>
+      <p><b>I'm Raul.</b> I run Linux servers and self-host automation for small teams. I moved off Windows years ago and never looked back — now I build the tools I use (<a class="u" href="https://github.com/7sh1d0w7x/state-witness">state-witness</a>, <a class="u" href="/linux-doctor.html">linux-doctor</a>) and work async, in writing, from Timișoara, RO.</p>
+      <p>Fixed price · documented · no calls. If I can't find anything to fix, you don't pay.</p>
+    </div>
+  </div>
   <p class="sub">I build the tools I use. Open source, tested, public.</p>
   <div class="proof">
     <div><img src="/img/state-witness.gif" alt="state-witness running in a terminal: deployment checks, sysctl hardening, firewall" loading="lazy"><h4>state-witness</h4><p>A security auditor for Linux (Rust) — SSH, firewall, users, sysctl. The same checks I run on your server.</p><p style="margin-top:10px"><a class="u" href="https://github.com/7sh1d0w7x/state-witness">github/state-witness ↗</a></p></div>
