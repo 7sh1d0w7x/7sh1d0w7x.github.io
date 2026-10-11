@@ -101,11 +101,19 @@
   .proof{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-top:40px}
   @media(max-width:800px){.proof{grid-template-columns:1fr}}
   .proof img{width:100%;display:block;border:1px solid var(--line2);border-radius:10px;margin-bottom:14px;background:#0d1117}
-  .about{display:grid;grid-template-columns:160px 1fr;gap:22px;align-items:start;margin-top:26px;padding:20px;border:1px solid var(--line2);border-radius:12px;background:var(--panel)}
-  .about img{width:160px;height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--line2);display:block}
-  .about p{color:var(--mut);font-size:14.5px}
-  .about p+p{margin-top:8px}
-  @media(max-width:800px){.about{grid-template-columns:1fr}.about img{width:120px;height:120px}}
+  .about{position:relative;display:grid;grid-template-columns:150px 1fr;gap:24px;align-items:start;margin-top:26px;padding:24px;border:1px solid var(--line2);border-radius:16px;
+    background:linear-gradient(135deg,rgba(255,180,84,.06),transparent 55%),var(--panel)}
+  .about img{width:150px;height:150px;object-fit:cover;border-radius:14px;border:1px solid var(--line2);display:block;box-shadow:0 0 0 4px rgba(255,180,84,.08)}
+  .about-body h3{font-family:"JetBrains Mono",monospace;font-size:19px;font-weight:500;margin-bottom:6px}
+  .about-body h3 .role{color:var(--mut);font-weight:400;font-size:13.5px}
+  .about-meta{display:flex;flex-wrap:wrap;gap:6px 8px;margin:0 0 14px;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--mut)}
+  .about-meta .pill{border:1px solid var(--line2);border-radius:999px;padding:3px 11px}
+  .about-meta .avail{color:var(--ok);border-color:rgba(92,224,138,.32)}
+  .about-body p{color:var(--mut);font-size:14.5px}
+  .about-body p+p{margin-top:8px}
+  .about-links{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+  .about-links .b{padding:8px 14px;font-size:13px}
+  @media(max-width:800px){.about{grid-template-columns:1fr;gap:16px}.about img{width:110px;height:110px}}
   .proof h4{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:16px;margin-bottom:6px}
   .proof h4:before{content:"./";color:var(--acc)}
   .proof p{color:var(--mut);font-size:14.5px}
