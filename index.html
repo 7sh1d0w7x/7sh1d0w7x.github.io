@@ -42,7 +42,7 @@
 
 <div class="hero"><div class="wrap hero-grid">
   <div>
-    <div class="eyebrow">linux security · self-hosted automation</div>
+    <div class="eyebrow">linux security · self-hosted automation · ai/mcp security</div>
     <h1>I harden your Linux server <span class="a">and self-host</span> your automation<span class="cursor"></span></h1>
     <p class="lead">A fresh VPS gets scanned by bots within minutes. I lock it down, document it, and — if you want — run your automation on it, so your data stays yours.</p>
     <div class="btns">
@@ -98,6 +98,18 @@
       </ul>
       <a class="b b-pri" href="#contact">./set-up-my-n8n</a>
     </div>
+    <div class="offer wide">
+      <h3><span class="n">›</span> MCP / Agent Security Review</h3>
+      <div class="price">from €99 · <b style="color:var(--acc)">launch price</b> (AI audit + agent hardening)</div>
+      <ul>
+        <li>MCP servers: exposed? authenticated? least-privilege? (default-deny, not <code>0.0.0.0</code>)</li>
+        <li>Tool poisoning &amp; prompt injection — I test them by hand and show you the real output</li>
+        <li>Blast radius: which read tools pair with which write/egress tools (that's your exfil path)</li>
+        <li>Audit trail design — every tool call logged with a <code>trigger_source</code></li>
+        <li>Written report: what's exposed, top 3 fixes, how to verify each · async, fixed price</li>
+      </ul>
+      <a class="b b-pri" href="#contact">./review-my-agents</a>
+    </div>
   </div>
 
   <div class="extras">
@@ -108,7 +120,7 @@
 
   <div class="entry">
     <h3>Not sure where to start? <span class="a">Server Health Check · €49 launch</span></h3>
-    <p>I run <b>linux-doctor</b> — my open-source tool (13★ on GitHub) — on your server and hand you a prioritized report: what's wrong, what matters, what to fix first. If you continue with hardening, the €49 comes off the price.</p>
+    <p>I run <b>linux-doctor</b> — my open-source tool (14★ on GitHub) — on your server and hand you a prioritized report: what's wrong, what matters, what to fix first. If you continue with hardening, the €49 comes off the price.</p>
     <a class="b b-line" href="#contact">./get-a-health-check</a>
   </div>
 </div></section>
@@ -128,7 +140,7 @@
     <div class="farrow">→</div>
     <div class="fstep"><div class="n">02 — fix</div><h4>Hardening · €179+</h4><p>I fix the issues and lock the server down. The €49 is credited.</p></div>
     <div class="farrow">→</div>
-    <div class="fstep"><div class="n">03 — keep</div><h4>Monitoring · €150–900/mo</h4><p>Uptime, alerts, backups and patching — so it stays safe.</p></div>
+    <div class="fstep"><div class="n">03 — keep</div><h4>Monitoring · €75–250/mo</h4><p>Uptime, alerts, backups and patching — so it stays safe.</p></div>
   </div>
 </div></section>
 
@@ -155,9 +167,10 @@
   <p class="sub">I build the tools I use. Open source, tested, public.</p>
   <div class="proof">
     <div><img src="/img/state-witness.gif" width="1000" height="620" alt="state-witness running in a terminal: deployment checks, sysctl hardening, firewall" loading="lazy"><h4>state-witness</h4><p>A security auditor for Linux (Rust) — SSH, firewall, users, sysctl. The same checks I run on your server.</p><p style="margin-top:10px"><a class="u" href="https://github.com/7sh1d0w7x/state-witness" target="_blank" rel="noopener">github/state-witness ↗</a></p></div>
-    <div><img src="/img/linux-doctor.gif" width="1000" height="640" alt="linux-doctor running in a terminal: health score, START HERE action, findings with fixes" loading="lazy"><h4>linux-doctor</h4><p>Read-only Linux health checks that explain problems and remember what changed. 13★.</p><p style="margin-top:10px"><a class="u" href="/linux-doctor.html">read more ↗</a></p></div>
+    <div><img src="/img/linux-doctor.gif" width="1000" height="640" alt="linux-doctor running in a terminal: health score, START HERE action, findings with fixes" loading="lazy"><h4>linux-doctor</h4><p>Read-only Linux health checks that explain problems and remember what changed. 14★.</p><p style="margin-top:10px"><a class="u" href="/linux-doctor.html">read more ↗</a></p></div>
   </div>
   <p style="margin-top:28px"><a class="u" href="/work.html">case-studies — tested backup, self-hosted automation, and the tooling behind them ↗</a></p>
+  <p style="margin-top:12px"><a class="u" href="/blog/tool-poisoning-by-hand.html">new — I poisoned my own MCP server: hands-on tool poisoning, real client output, and the scanner that catches it ↗</a></p>
 </div></section>
 
 <section id="faq"><div class="wrap">
