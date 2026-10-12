@@ -124,7 +124,7 @@ for t in tools:
 <pre>SUSPECT: add → contains read
 SUSPECT: add → contains /tmp
 SUSPECT: add → contains do not mention</pre>
-<p>Note that <code>reverse</code> is not flagged — its description is clean. This is a smoke detector, not a lock. It catches the lazy version (which is most of what's actually deployed) and it makes "review the catalog" a routine instead of a good intention.</p>
+<p>Note that <code>reverse</code> is not flagged — its description is clean. This is a smoke detector, not a lock. It catches the lazy version (which is most of what's actually deployed) and it makes "review the catalog" a routine instead of a good intention. The script — plus a real poisoned catalog and a clean one to compare — is in <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">github.com/7sh1d0w7x/mcp-tool-scanner</a> (the version there also sets exit codes, so it can run in CI).</p>
 
 <h2>What I'd actually check on a real deployment</h2>
 <ol>
