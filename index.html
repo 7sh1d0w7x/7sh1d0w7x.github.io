@@ -56,15 +56,15 @@
       <span class="dot" style="background:#ff6b6b"></span>
       <span class="dot" style="background:#ffb454"></span>
       <span class="dot" style="background:#5ce08a"></span>
-      <span style="color:#6d7872;font-size:11.5px;margin-left:8px;font-family:'JetBrains Mono',monospace">state-witness check</span>
+      <span style="color:#6d7872;font-size:11.5px;margin-left:8px;font-family:'JetBrains Mono',monospace">state-witness ssh</span>
     </div>
-    <div class="body"><span class="dim">$</span> <span class="c">state-witness</span> check
-<span class="ok">✔</span> sshd      <span class="dim">keys-only, root login disabled</span>
-<span class="ok">✔</span> firewall  <span class="dim">default-deny — 22, 443 open</span>
-<span class="ok">✔</span> users     <span class="dim">1 sudo, no empty passwords</span>
-<span class="bad">✖</span> sysctl    <span class="dim">rp_filter disabled</span>
+    <div class="body"><span class="dim">$</span> <span class="c">state-witness</span> ssh
+<span class="c">!</span> PermitRootLogin: <span class="dim">prohibit-password</span>
+<span class="dim">  └─ from (effective, sshd -T)</span>
+<span class="bad">✗</span> PasswordAuthentication: <span class="dim">yes</span>
+<span class="dim">  └─ from (effective, sshd -T)</span>
 
-<span class="c">→ 3 passed · 1 issue</span> <span class="dim">— fix queued, report ready</span></div>
+<span class="c">→ 2 findings</span> <span class="dim">· exit 1 (CI-ready)</span></div>
   </div>
 </div></div>
 
