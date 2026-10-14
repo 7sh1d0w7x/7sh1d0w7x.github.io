@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a hardening report actually looks like (real example) — 7sh1d0w7x</title>
+<meta name="description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta property="og:title" content="What a hardening report actually looks like (real example) — 7sh1d0w7x">
+<meta property="og:description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#0a0c0b">
+<link rel="canonical" href="https://7sh1d0w7x.github.io/blog/hardening-report-example.html">
+<meta property="og:site_name" content="7sh1d0w7x">
+<meta property="og:type" content="website">
+<meta property="og:title" content="What a hardening report actually looks like (real example) — 7sh1d0w7x">
+<meta property="og:description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta property="og:url" content="https://7sh1d0w7x.github.io/blog/hardening-report-example.html">
+<meta property="og:image" content="https://7sh1d0w7x.github.io/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What a hardening report actually looks like (real example) — 7sh1d0w7x">
+<meta name="twitter:description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta name="twitter:image" content="https://7sh1d0w7x.github.io/img/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c0b'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='monospace' font-size='15' fill='%23ffb454'%3E7%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="/">7sh1d0w<b>7x</b></a>
+  <nav>
+    <a href="/#services">/services</a>
+    <a href="/work.html">/work</a>
+    <a href="/linux-doctor.html">/linux-doctor</a>
+    <a href="/blog/">/blog</a>
+    <a href="/#faq">/faq</a>
+    <a href="/#contact">/contact</a>
+  </nav>
+</div></header>
+<main><div class="wrap" style="padding:56px 0 80px">
+<div class="post">
+<p style="margin-bottom:18px"><a href="/blog/" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">← /blog</a></p>
+
+<h1>What a hardening report actually looks like (real example)</h1>
+<div class="meta">2026-10-14 · Linux hardening · 6 min read</div>
+
+<p>Most "server hardening" is sold as a list of advice. <i>Disable root login. Use keys. Set up a firewall.</i> That list is free on the internet — you don't need to pay anyone for it.</p>
+
+<p>What you actually pay for is <b>evidence</b>: proof that a specific setting on a specific machine was checked, changed, and verified. So here's the report a client gets from me, filled in with a real (sanitised) example. Nothing here is marketing — it's the document.</p>
+
+<h2>The shape of it</h2>
+<pre>1. SUMMARY          what was at risk, what's closed now
+2. METHOD           what was checked, with which command
+3. BEFORE / AFTER   table: setting · old value · new value · why
+4. EVIDENCE         raw output, not claims
+5. WHAT STAYED OPEN what wasn't fixed, and why
+6. RECOMMENDATIONS  next steps, optional</pre>
+
+<p>Section 5 is the one almost nobody includes. Keep reading — it's the reason the rest is trustworthy.</p>
+
+<h2>The example: a 2-core VPS running n8n</h2>
+<p>Small box, one purpose, exposed to the internet. Client asked: "is this thing safe enough to leave running?" Here's the summary section, verbatim:</p>
+
+<pre>BEFORE: SSH accepted passwords (brute-forceable), root login
+        allowed with a password, X11 forwarding on, no firewall
+        rules persisted, backup existed but had never been restored.
+
+AFTER:  SSH keys only, root login disabled, X11 forwarding off,
+        nftables default-deny with 2 ports open, backup restored
+        and timed in an isolated environment.
+
+CLOSED: 4 risks (2 high, 1 medium, 1 low)
+OPEN:   2 (see section 5)</pre>
+
+<h2>Before / after, with reasons</h2>
+<p>The table is the core of the report, because "why" is what separates a change from a guess.</p>
+
+<pre>SETTING                    BEFORE              AFTER        WHY
+PasswordAuthentication     yes                 no           password auth is
+                                                             brute-forceable at
+                                                             internet scale
+PermitRootLogin            without-password    no           removes a
+                                                             well-known target
+X11Forwarding              yes                 no           X11 forwarding
+                                                             exposes a data
+                                                             channel + display
+MaxAuthTries               6                   3            limits attempts
+                                                             per connection
+nftables                   not persisted       default-deny only 22+443
+                                                             open</pre>
+
+<h2>Evidence (raw output, not claims)</h2>
+<p>Every line in the table above has an output behind it. This is what gets attached:</p>
+
+<pre>$ sshd -T | grep -iE "passwordauth|permitroot|x11forwarding"
+passwordauthentication no
+permitrootlogin no
+x11forwarding no
+
+$ nft list ruleset | head -6
+table inet filter {
+    chain input {
+        type filter hook input priority 0; policy drop;</pre>
+
+<p>Note the first command. It's not reading a config file — it's asking the running daemon what it <i>actually</i> applies. That distinction matters more than it sounds, and it's the trap in the next section.</p>
+
+<h2>The trap that ate an hour</h2>
+<p>This one is worth publishing because it's the kind of thing that makes a "hardened" server not actually hardened.</p>
+
+<p>I edited <code>/etc/ssh/sshd_config</code> correctly. The setting was there, uncommented, saved. And <code>sshd -T</code> still reported the old value.</p>
+
+<p>The reason: modern distros include a drop-in directory near the top of the main config —</p>
+
+<pre>Include /etc/ssh/sshd_config.d/*.conf</pre>
+
+<p>— and in OpenSSH, <b>the first value obtained wins</b>. Drop-ins are read <i>before</i> the rest of the file, so a distro-shipped drop-in was overriding my edit. The fix isn't to edit harder; it's to put your setting where it's read first:</p>
+
+<pre>/etc/ssh/sshd_config.d/10-hardening.conf
+    X11Forwarding no</pre>
+
+<p>Lower number, read earlier, wins. Lesson: <b>what's written is not what's applied.</b> Always verify against the running service, never against the file.</p>
+
+<h2>Section 5: what stayed open</h2>
+<p>Here's the part that builds more trust than any success claim:</p>
+
+<pre>1. No intrusion detection (auditd/AIDE) — out of scope for this
+   engagement; monitoring is a separate service.
+2. Backup restore was tested manually, not automated — the client
+   should schedule a quarterly restore test.</pre>
+
+<p>A report that says "everything is perfect" is not credible — it's unverifiable. A report that names exactly what's still open is checkable, and that's why it can be trusted.</p>
+
+<h2>How to judge anyone selling you this</h2>
+<p>If you're shopping for hardening (from me or anyone else), ask for three things:</p>
+
+<pre>1. BEFORE / AFTER with the reason per setting — not a generic checklist
+2. RAW OUTPUT as evidence — not screenshots of a tool's green ticks
+3. WHAT STAYED OPEN — a report with zero open items is hiding something</pre>
+
+<p>If a vendor can't produce those three, you're buying advice you could have found for free.</p>
+
+<h2>The honest part</h2>
+<p>This example is sanitised — hostname, IPs and client details are changed, and the values are from a lab box I run for exactly this purpose. But the structure, the commands, and the trap are real: the drop-in override above cost me an hour and is now written into the runbook so it doesn't cost the next one.</p>
+
+<p>That's the whole point of doing the work in a lab before touching a client's box. The mistakes are free there.</p>
+
+<p style="margin-top:34px;padding-top:18px;border-top:1px solid var(--bd)"><b>Need this done on your box?</b> <a class="u" href="/#contact">Get in touch</a> — async, no calls required. I'll tell you upfront what's in scope and what isn't.</p>
+
+</div>
+</div></main>
+<footer><div class="wrap foot">
+  <span>© <span id="y"></span> 7sh1d0w7x — secure self-hosted &amp; AI/MCP security</span>
+  <span><a class="u" href="https://github.com/7sh1d0w7x" target="_blank" rel="noopener">github</a> · timisoara, ro · remote</span>
+</div></footer>
+<script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>
