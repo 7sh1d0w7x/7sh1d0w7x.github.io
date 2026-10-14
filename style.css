@@ -22,8 +22,8 @@
   header{border-bottom:1px solid var(--line);position:sticky;top:0;
     background:rgba(10,12,11,.86);backdrop-filter:blur(10px);z-index:20}
   .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
-  .brand{font-weight:700;font-size:17px;letter-spacing:-.5px;display:inline-flex;align-items:center;gap:9px}
-  .brand img{height:26px;width:auto;display:block;flex:0 0 auto}
+  .brand{font-weight:700;font-size:17px;letter-spacing:-.5px;display:inline-flex;align-items:center;gap:5px}
+  .brand img{height:24px;width:auto;display:block;flex:0 0 auto;margin-top:1px}
   .brand b{color:var(--acc)}
   .nav nav a{margin-left:22px;font-size:13.5px;color:var(--mut);font-family:"JetBrains Mono",monospace}
   .nav nav a:hover{color:var(--acc)}
