@@ -1,6 +1,6 @@
 :root{
     --bg:#0a0c0b; --panel:#0f1211; --line:#1d2421; --line2:#26302b;
-    --ink:#e6ece7; --mut:#8b978f; --acc:#ffb454; --ok:#5ce08a; --bad:#ff6b6b;
+    --ink:#e6ece7; --mut:#8b978f; --acc:#02C1BA; --ok:#5ce08a; --bad:#ff6b6b;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth;scroll-padding-top:84px}
@@ -42,7 +42,7 @@
   .b{display:inline-block;padding:12px 20px;font-size:14px;font-weight:500;border:1px solid var(--line2);
     border-radius:6px;transition:.16s;cursor:pointer}
   .b-pri{background:var(--acc);color:#0a0c0b;border-color:var(--acc);font-weight:700}
-  .b-pri:hover{background:#ffc978}
+  .b-pri:hover{background:#4fd8d2}
   .b-line{color:var(--ink)}
   .b-line:hover{border-color:var(--acc);color:var(--acc)}
   .meta{margin-top:28px;display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--mut);
