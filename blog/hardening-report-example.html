@@ -49,7 +49,7 @@
 
 <p>Most "server hardening" is sold as a list of advice. <i>Disable root login. Use keys. Set up a firewall.</i> That list is free on the internet — you don't need to pay anyone for it.</p>
 
-<p>What you actually pay for is <b>evidence</b>: proof that a specific setting on a specific machine was checked, changed, and verified. So here's the report a client gets from me, filled in with a real (sanitised) example. Nothing here is marketing — it's the document.</p>
+<p>What you actually pay for is <b>evidence</b>: proof that a specific setting on a specific machine was checked, changed, and verified. So here's the report a client gets from me, filled in with a real (sanitized) example. No pitch. Just the document.</p>
 
 <h2>The shape of it</h2>
 <pre>1. SUMMARY          what was at risk, what's closed now
@@ -105,7 +105,7 @@ table inet filter {
     chain input {
         type filter hook input priority 0; policy drop;</pre>
 
-<p>Note the first command. It's not reading a config file — it's asking the running daemon what it <i>actually</i> applies. That distinction matters more than it sounds, and it's the trap in the next section.</p>
+<p>Note the first command. That command doesn't read the config file. It asks the running daemon what it really applies. That distinction matters more than it sounds, and it's the trap in the next section.</p>
 
 <h2>The trap that ate an hour</h2>
 <p>This one is worth publishing because it's the kind of thing that makes a "hardened" server not actually hardened.</p>
@@ -131,7 +131,7 @@ table inet filter {
 2. Backup restore was tested manually, not automated — the client
    should schedule a quarterly restore test.</pre>
 
-<p>A report that says "everything is perfect" is not credible — it's unverifiable. A report that names exactly what's still open is checkable, and that's why it can be trusted.</p>
+<p>A report with zero open items can't be checked, so you have no reason to trust it. A report that names exactly what's still open is checkable, and that's why it can be trusted.</p>
 
 <h2>How to judge anyone selling you this</h2>
 <p>If you're shopping for hardening (from me or anyone else), ask for three things:</p>
@@ -143,7 +143,7 @@ table inet filter {
 <p>If a vendor can't produce those three, you're buying advice you could have found for free.</p>
 
 <h2>The honest part</h2>
-<p>This example is sanitised — hostname, IPs and client details are changed, and the values are from a lab box I run for exactly this purpose. But the structure, the commands, and the trap are real: the drop-in override above cost me an hour and is now written into the runbook so it doesn't cost the next one.</p>
+<p>This example is sanitized — hostname, IPs and client details are changed, and the values are from a lab box I run for exactly this purpose. But the structure, the commands, and the trap are real: the drop-in override above cost me an hour and is now written into the runbook so it doesn't cost the next one.</p>
 
 <p>That's the whole point of doing the work in a lab before touching a client's box. The mistakes are free there.</p>
 
