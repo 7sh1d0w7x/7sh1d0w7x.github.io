@@ -258,19 +258,32 @@
   (function(){
     var hdr = document.querySelector('header');
     if (!hdr) return;
+
+    // The browser scrolls to the fragment before web fonts load; when they settle,
+    // the content above the target shifts. Correct that once — but never after the
+    // user has started moving, or the correction would pull them back.
+    var userMoved = false;
+    function markMoved(){ userMoved = true; }
+    ['wheel', 'touchstart', 'touchmove', 'pointerdown', 'mousedown'].forEach(function(ev){
+      window.addEventListener(ev, markMoved, { passive: true, once: true });
+    });
+    window.addEventListener('keydown', function(e){
+      var k = e.key;
+      if (k === ' ' || k === 'Spacebar' || k === 'PageDown' || k === 'PageUp' ||
+          k === 'Home' || k === 'End' || k === 'ArrowDown' || k === 'ArrowUp') markMoved();
+    });
+
     function sync(){
       document.documentElement.style.scrollPaddingTop = (hdr.offsetHeight + 12) + 'px';
     }
-    sync();
-    window.addEventListener('resize', sync);
     function fixHash(){
-      if (!location.hash) return;
+      if (userMoved || !location.hash) return;
       var t = document.getElementById(location.hash.slice(1));
       if (!t) return;
-      // Correct both under- and over-shoot: web fonts finish loading after the
-      // browser's first fragment scroll, which shifts the content above it.
       if (Math.abs(t.getBoundingClientRect().top - hdr.offsetHeight - 12) > 4) t.scrollIntoView();
     }
+    sync();
+    window.addEventListener('resize', sync);
     window.addEventListener('load', function(){ sync(); fixHash(); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ sync(); fixHash(); });
   })();
