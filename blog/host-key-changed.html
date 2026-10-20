@@ -63,7 +63,7 @@ Host key verification failed.</pre>
 
 <h2>What a host key is</h2>
 
-<p>Every SSH server has its own key pair, generated once when the server is installed. It works the same way as your own key pair, only backwards:</p>
+<p>Every SSH server has its own key pair, generated once when SSH is installed or first started. It works the same way as your own key pair, only backwards:</p>
 
 <pre class="wrap">your key pair ...... proves who YOU are, to the server
 the host key ....... proves who the SERVER is, to you</pre>
@@ -72,7 +72,7 @@ the host key ....... proves who the SERVER is, to you</pre>
 
 <h2>Why your machine remembers it</h2>
 
-<p>The first time you connect, your client receives the server's public key and stores it in <code>~/.ssh/known_hosts</code>, together with a fingerprint — a short, comparable form of it. On every later connection, it compares what it gets now with what it stored:</p>
+<p>The first time you connect, your client receives the server's public key and stores the key itself in <code>~/.ssh/known_hosts</code>. The fingerprint you see in the warning is not a separate record — it is a short, comparable form derived from that key, so you can check it by eye or read it over the phone. On every later connection, it compares what it gets now with what it stored:</p>
 
 <pre class="wrap">same key ..... continue, silently
 other key .... stop, and show the warning above</pre>
@@ -120,7 +120,7 @@ hostile ........ someone is between you and the server, presenting their key</pr
 <p>This is where it gets less comfortable. You cannot re-run a setup script you did not write. In order of preference:</p>
 
 <ol>
-<li><b>The provider's console.</b> Most VPS panels show the host keys, or let you open a serial console and read <code>/etc/ssh/ssh_host_ed25519_key.pub</code> yourself.</li>
+<li><b>The provider's console.</b> Check whether your panel shows the host keys. If it does not, open the serial or VNC console and read <code>/etc/ssh/ssh_host_ed25519_key.pub</code> in there yourself.</li>
 <li><b>A second channel.</b> Ask the person who runs it, over something that is not the connection in question.</li>
 <li><b>Nothing.</b> If you cannot verify it, do not accept it. A failed connection costs you five minutes; a wrong "yes" costs you the server.</li>
 </ol>
