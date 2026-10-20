@@ -62,7 +62,7 @@
 5. WHAT STAYED OPEN what wasn't fixed, and why
 6. RECOMMENDATIONS  next steps, optional</pre>
 
-<p>Section 5 is the one almost nobody includes. Keep reading — it's the reason the rest is trustworthy.</p>
+<p>Section 5 is the part that is easy to skip. It is also the part that makes the rest checkable — it is where the report states what it did not cover and where its conclusions stop.</p>
 
 <h2>The example: a small container in my lab</h2>
 <p>One purpose, exposed to the internet on a non-standard SSH port. Here is the summary section, verbatim:</p>
@@ -135,14 +135,24 @@ table inet filter {
 2. Backup restore was tested manually, not automated — schedule a
    quarterly restore test.</pre>
 
-<p>A report with zero open items can't be checked, so you have no reason to trust it. A report that names exactly what's still open is checkable, and that's why it can be trusted.</p>
+<p>A report can end with <b>zero open items</b> for the scope it covered. That is a valid result — it means nothing actionable was found in what was checked. It is not proof that the server is secure, and it is not a reason to distrust the report either.</p>
+
+<p>What makes a report checkable is not the number of open items. It is whether it states:</p>
+<ul>
+  <li>what was checked;</li>
+  <li>the evidence and the results;</li>
+  <li>what was <b>not</b> checked;</li>
+  <li>any risk that remains;</li>
+  <li>the limits of its own conclusions.</li>
+</ul>
+<p>A zero-finding report that documents those five things is useful. One that omits them is not, whatever it concluded.</p>
 
 <h2>How to judge anyone selling you this</h2>
 <p>If you're shopping for hardening (from me or anyone else), ask for three things:</p>
 
 <pre>1. BEFORE / AFTER with the reason per setting — not a generic checklist
 2. RAW OUTPUT as evidence — not screenshots of a tool's green ticks
-3. WHAT STAYED OPEN — a report with zero open items is hiding something</pre>
+3. WHAT STAYED OPEN — what was not checked, and any risk that remains</pre>
 
 <p>If a vendor can't produce those three, you're buying advice you could have found for free.</p>
 

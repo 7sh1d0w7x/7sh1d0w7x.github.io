@@ -78,17 +78,18 @@
     <div class="offer">
       <h3><span class="n">›</span> Server Hardening</h3>
       <div class="price">from €179 / server · <b style="color:var(--acc)">launch price</b> (€299 after)</div>
-      <p class="sub"><b>Problem.</b> A server you inherited or set up quickly: you don't know what is exposed, or what is safe to change without breaking something.</p>
+      <p class="sub"><b>Problem.</b> A server you inherited or set up quickly: you don't know what is exposed, and you want it fixed — not just described.</p>
       <ul>
-        <li>SSH locked to keys only (no root login, no passwords)</li>
-        <li>Firewall — default-deny, only the ports you actually use</li>
-        <li>fail2ban · automatic security updates · sysctl values that fit the host</li>
+        <li>Initial assessment: what is exposed, and what is worth changing</li>
+        <li>Implementing the changes agreed in writing — SSH keys only, default-deny firewall, fail2ban, automatic updates, sysctl values that fit the host</li>
+        <li>Verification after each change, before the next one</li>
         <li>Before/after report, with the evidence for each setting</li>
         <li>Optional: Nginx, TLS, Docker, monitoring</li>
       </ul>
-      <p class="sub"><b>You receive:</b> a written before/after report, the raw evidence, and the exact command to roll back each change.</p>
+      <p class="sub"><b>You receive:</b> a written before/after report, the raw evidence, and the rollback step for each change.</p>
+      <p class="sub"><b>Rollback:</b> every change comes with the command or file that reverts it. Full reversal depends on the snapshot taken before the work and on what the change touched — where a clean rollback is not possible, the report says so before the change is applied.</p>
       <p class="sub"><b>Not included:</b> application code review, compliance certification, 24/7 monitoring, changes outside the agreed window.</p>
-      <p class="sub"><b>Next step:</b> tell me the OS, what runs on it, and what must not change.</p>
+      <p class="sub"><b>Next step:</b> tell me the OS, what runs on it, what must not change, and when a change window is possible.</p>
       <a class="b b-pri" href="#contact">./harden-my-server</a>
     </div>
     <div class="offer">
@@ -131,8 +132,8 @@
   </div>
 
   <div class="entry">
-    <h3>Smaller starting point? <span class="a">Server Health Check · €49</span></h3>
-    <p>I run <b>linux-doctor</b> — my open-source tool — on your server and hand you a prioritized report: what's wrong, what matters, what to fix first. If you continue with hardening, the €49 comes off the price. It is an entry option, not a required first step — you can start with any service.</p>
+    <h3>Assessment only? <span class="a">Server Health Check · €49</span></h3>
+    <p>I run <b>linux-doctor</b> and a manual pass on your server, and hand you a prioritized report: what is exposed, what matters, what to fix first — with the evidence behind each finding. <b>Nothing on the system is changed</b>, and implementing the fixes is not included. If you go on to hardening, the €49 comes off the price. It is an entry option, not a required step before hardening — you can start with any service.</p>
     <a class="b b-line" href="#contact">./get-a-health-check</a>
   </div>
 </div></section>
@@ -147,9 +148,9 @@
 <section><div class="wrap">
   <div class="shead"><span class="idx">[02]</span><h2>How it works</h2></div>
   <p class="sub">Every service follows the same steps: <b>written request → scope agreed → quote → agreed work → verification and handover</b>. Nothing starts before the scope and the price are agreed in writing.</p>
-  <p class="sub">Start small, grow only if it's worth it. Every step sets up the next.</p>
+  <p class="sub">The three steps below are a common path, not a requirement — you can start at any of them.</p>
   <div class="funnel">
-    <div class="fstep"><div class="n">01 — start</div><h4>Health Check · €49</h4><p>I run linux-doctor and give you a prioritized report.</p></div>
+    <div class="fstep"><div class="n">01 — assess</div><h4>Health Check · €49</h4><p>Assessment only: a prioritized report, no changes to the system.</p></div>
     <div class="farrow">→</div>
     <div class="fstep"><div class="n">02 — fix</div><h4>Hardening · €179+</h4><p>I fix the issues and lock the server down. The €49 is credited.</p></div>
     <div class="farrow">→</div>
