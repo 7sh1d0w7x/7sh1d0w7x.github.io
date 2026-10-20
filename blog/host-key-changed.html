@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SSH host key changed: when to accept it, and when to stop — 7sh1d0w7x</title>
+<meta name="description" content="The wall of @@@ is not noise. Here is what changed, why SSH refuses, and the one question that tells you whether to accept.">
+<meta property="og:title" content="SSH host key changed: when to accept it, and when to stop — 7sh1d0w7x">
+<meta property="og:description" content="The wall of @@@ is not noise. Here is what changed, why SSH refuses, and the one question that tells you whether to accept.">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#0a0c0b">
+<link rel="canonical" href="https://7sh1d0w7x.github.io/blog/host-key-changed.html">
+<meta property="og:site_name" content="7sh1d0w7x">
+<meta property="og:url" content="https://7sh1d0w7x.github.io/blog/host-key-changed.html">
+<meta property="og:image" content="https://7sh1d0w7x.github.io/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SSH host key changed: when to accept it, and when to stop — 7sh1d0w7x">
+<meta name="twitter:description" content="The wall of @@@ is not noise. Here is what changed, why SSH refuses, and the one question that tells you whether to accept.">
+<meta name="twitter:image" content="https://7sh1d0w7x.github.io/img/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="/" aria-label="7sh1d0w7x">7sh1d0w<img src="/img/logo-mark-header.png" alt="7x" width="32" height="20"></a>
+  <nav>
+    <a href="/#services">/services</a>
+    <a href="/work.html">/work</a>
+    <a href="/linux-doctor.html">/linux-doctor</a>
+    <a href="/blog/">/blog</a>
+    <a href="/#faq">/faq</a>
+    <a href="/#contact">/contact</a>
+  </nav>
+</div></header>
+<main><div class="wrap" style="padding:56px 0 80px">
+<div class="post">
+<p style="margin-bottom:18px"><a href="/blog/" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">← /blog</a></p>
+
+<h1>SSH host key changed: when to accept it, and when to stop</h1>
+<div class="meta">2026-10-20 · Linux hardening · 5 min read</div>
+
+<p>This is what I got when I reconnected to a container I had just recreated:</p>
+
+<pre class="wrap">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:R8PZd9wIg8Bb5Y1Ts5Nmr8tF29TrWwpY8fSYRf5AJaU.
+Offending ECDSA key in /home/user/.ssh/known_hosts:12
+Host key for [127.0.0.1]:2222 has changed and you have requested strict checking.
+Host key verification failed.</pre>
+
+<p>One detail in that message looks like a contradiction: it names an <b>ED25519</b> fingerprint, then an <b>ECDSA</b> entry in <code>known_hosts</code>. It is not a contradiction — the stored entry was ECDSA, the server now offers ED25519. Same host and port, different key: that is exactly the change the check is reporting.</p>
+
+<p>The honest reaction is to press <code>yes</code> and move on. That is also how people get owned. This post is the ten minutes I spent instead, and the rule I came out with.</p>
+
+<h2>What a host key is</h2>
+
+<p>Every SSH server has its own key pair, generated once when SSH is installed or first started. It works the same way as your own key pair, only backwards:</p>
+
+<pre class="wrap">your key pair ...... proves who YOU are, to the server
+the host key ....... proves who the SERVER is, to you</pre>
+
+<p>Without it, you would have no way to tell the server you meant from anything that answered on that address.</p>
+
+<h2>Why your machine remembers it</h2>
+
+<p>The first time you connect, your client receives the server's public key and stores the key itself in <code>~/.ssh/known_hosts</code>. The fingerprint you see in the warning is not a separate record — it is a short, comparable form derived from that key, so you can check it by eye or read it over the phone. On every later connection, it compares what it gets now with what it stored:</p>
+
+<pre class="wrap">same key ..... continue, silently
+other key .... stop, and show the warning above</pre>
+
+<p>That warning is not a bug. It is the only signal you have that you might be talking to something else.</p>
+
+<h2>The detail that trips everyone: <code>[host]:port</code></h2>
+
+<p>My entry was not stored under <code>127.0.0.1</code>. It was stored under <code>[127.0.0.1]:2222</code>, because the port is not 22. That is why the obvious fix does nothing:</p>
+
+<pre class="wrap">ssh-keygen -R 127.0.0.1              # does not touch the entry
+ssh-keygen -R "[127.0.0.1]:2222"     # removes it</pre>
+
+<p>The brackets are not decoration. They tell the client "this is host and port, not a hostname". If you have ever "fixed" the warning and had it come back, this is why.</p>
+
+<h2>Two situations, one question</h2>
+
+<p>A changed key has two possible explanations, and they are not equally common. Everything else — a reinstall, a migration, an ephemeral container — is a variant of the first:</p>
+
+<pre class="wrap">legitimate ..... you reinstalled the server, recreated the container,
+                 migrated to a new provider, or the provider rotated the keys
+
+hostile ........ someone is between you and the server, presenting their key</pre>
+
+<p>The question that separates them is not technical. It is:</p>
+
+<p><b>Did I change anything?</b></p>
+
+<p>If yes — a reinstall, a new container, a migration — you know why the key differs, and you can verify the new fingerprint through a channel you trust. If no, stop. Not "probably fine". Stop.</p>
+
+<h2>What I did</h2>
+
+<p>I had recreated the container two minutes earlier, so I knew the key would differ. That is the only reason the next step was safe:</p>
+
+<pre class="wrap">ssh-keygen -R "[127.0.0.1]:2222"</pre>
+
+<p>The next connection asked me to trust a new key. I compared the fingerprint with the one the setup script had printed:</p>
+
+<pre class="wrap">SHA256:R8PZd9wIg8Bb5Y1Ts5Nmr8tF29TrWwpY8fSYRf5AJaU   ← matches the script output</pre>
+
+<p>Then I accepted. Two conditions, both checked: I knew <i>why</i> it changed, and I had an independent source for the new value. Without both, "yes" is a guess.</p>
+
+<h2>On a server you do not control</h2>
+
+<p>This is where it gets less comfortable. You cannot re-run a setup script you did not write. In order of preference:</p>
+
+<ol>
+<li><b>The provider's console.</b> Check whether your panel shows the host keys. If it does not, open the serial or VNC console and read <code>/etc/ssh/ssh_host_ed25519_key.pub</code> in there yourself.</li>
+<li><b>A second channel.</b> Ask the person who runs it, over something that is not the connection in question.</li>
+<li><b>Nothing.</b> If you cannot verify it, do not accept it. A failed connection costs you five minutes; a wrong "yes" costs you the server.</li>
+</ol>
+
+<h2>Why <code>StrictHostKeyChecking=no</code> is a bad habit</h2>
+
+<p>You will find this suggested in tutorials and CI snippets, usually to make a script stop complaining:</p>
+
+<pre class="wrap">ssh -o StrictHostKeyChecking=no ...</pre>
+
+<p>What it does is turn off exactly the check that just protected you. The warning disappears, and so does the only signal that would tell you something is wrong.</p>
+
+<p>If you need something for automation, <code>accept-new</code> is the narrower option: it adds host keys it has never seen, but still refuses a host whose key has changed. That is the part you actually want to keep.</p>
+
+<h2>The rule</h2>
+
+<p>A changed host key is not an error to suppress. It is a question: <b>do I know why this changed, and can I verify the new value somewhere else?</b></p>
+
+<p>Two yeses — accept, and move on. Anything else — stop. The wall of <code>@@@</code> is not the tool being dramatic. It is the tool doing its one job.</p>
+
+<div class="cta"><p><b>Want your server checked?</b> I run a read-only <a href="/">hardening audit</a> — what's exposed, what it actually enforces, and the evidence behind each finding. If there is nothing worth fixing, you don't pay.</p></div>
+
+</div>
+</div></main>
+<footer><div class="wrap foot">
+  <span>© <span id="y"></span> 7sh1d0w7x <span class="pron">· read “seven-shadow-sevenx”</span> — secure self-hosted &amp; AI/MCP security</span>
+  <span><a class="u" href="https://github.com/7sh1d0w7x" target="_blank" rel="noopener">github</a> · timisoara, ro · remote</span>
+</div></footer>
+<script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>
