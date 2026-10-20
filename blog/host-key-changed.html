@@ -133,7 +133,9 @@ hostile ........ someone is between you and the server, presenting their key</pr
 
 <pre class="wrap">ssh -o StrictHostKeyChecking=no ...</pre>
 
-<p>What it does is turn off exactly the check that just protected you. The warning disappears, and so does the only signal that would tell you something is wrong. If you need it for automation, the safer shape is to pin the expected key instead of disabling the check — but that is a different post.</p>
+<p>What it does is turn off exactly the check that just protected you. The warning disappears, and so does the only signal that would tell you something is wrong.</p>
+
+<p>If you need something for automation, <code>accept-new</code> is the narrower option: it adds host keys it has never seen, but still refuses a host whose key has changed. That is the part you actually want to keep.</p>
 
 <h2>The rule</h2>
 
