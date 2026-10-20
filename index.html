@@ -70,7 +70,7 @@
 </div></div>
 
 <section id="services"><div class="wrap">
-  <div class="shead"><span class="idx">[01]</span><h2>What I do</h2></div>
+  <div class="shead"><span class="idx">[01]</span><h2>Services, evidence &amp; deliverables</h2></div>
   <p class="sub">Fixed scope, fixed price. You get a short, plain-language report — not a black box.
   <br><br><b style="color:var(--acc);font-family:'JetBrains Mono',monospace">// launch pricing</b> — the launch rate applies to the first clients. A testimonial is welcome, never required.</p>
 
@@ -86,6 +86,7 @@
         <li>Before/after report, with the evidence for each setting</li>
         <li>Optional: Nginx, TLS, Docker, monitoring</li>
       </ul>
+      <p class="sub"><b>Evidence:</b> a <a class="u" href="/blog/hardening-report-example.html">worked lab report</a>, plus the two open-source tools below.</p>
       <p class="sub"><b>You receive:</b> a written before/after report, the raw evidence, and the rollback step for each change.</p>
       <p class="sub"><b>Rollback:</b> every change comes with the command or file that reverts it. Full reversal depends on the snapshot taken before the work and on what the change touched — where a clean rollback is not possible, the report says so before the change is applied.</p>
       <p class="sub"><b>Not included:</b> application code review, compliance certification, 24/7 monitoring, changes outside the agreed window.</p>
@@ -103,6 +104,7 @@
         <li>Workflows: form → CRM, invoices, reminders, AI summaries</li>
         <li>Migration from Zapier/Make for the agreed workflows</li>
       </ul>
+      <p class="sub"><b>Evidence:</b> a <a class="u" href="/work.html">lab summary</a> — no public configuration or logs are published for this lab.</p>
       <p class="sub"><b>You receive:</b> a running instance, documented access, the backup/restore steps, and the agreed workflows.</p>
       <p class="sub"><b>Not included:</b> workflows you have not specified, third-party subscriptions, data migration beyond the agreed list.</p>
       <p class="sub"><b>Next step:</b> list the workflows and where the data lives today.</p>
@@ -118,10 +120,36 @@
         <li>Blast radius: which read tools pair with which write/egress tools (that's your exfil path)</li>
         <li>Audit trail design — how a tool call is logged and attributed</li>
       </ul>
+      <p class="sub"><b>Evidence:</b> the <a class="u" href="/blog/tool-poisoning-by-hand.html">poisoning lab</a> and the <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">scanner</a> below.</p>
       <p class="sub"><b>You receive:</b> a written report — what is exposed, the top 3 fixes, how to verify each, and the scanner output for your catalog.</p>
       <p class="sub"><b>Not included:</b> a guarantee that an agent cannot be manipulated, code fixes, compliance certification, penetration testing.</p>
       <p class="sub"><b>Next step:</b> name the server or integration, and what the agent is allowed to touch.</p>
       <a class="b b-pri" href="#contact">./review-my-agents</a>
+    </div>
+  </div>
+
+  <div id="evidence">
+    <h3 style="font-size:20px;margin-top:46px">Evidence you can inspect</h3>
+    <p class="sub">Each item is public: a report, a repository, or a lab write-up. Where a public artifact does not exist, the entry says so.</p>
+    <div class="pf">
+      <div class="row"><span class="lbl">hardening report</span><div><b>Lab.</b> A Fedora container I hardened for the write-up. <a class="u" href="/blog/hardening-report-example.html">Read it ↗</a><br>
+        <b>Shows:</b> the report format, the output attached to each setting, and the drop-in override trap.<br>
+        <b>Does not show:</b> a client engagement, or that any specific server is secure.</div></div>
+      <div class="row"><span class="lbl">state-witness</span><div><b>Open source.</b> <a class="u" href="https://github.com/7sh1d0w7x/state-witness" target="_blank" rel="noopener">github/state-witness ↗</a><br>
+        <b>Shows:</b> checks against what the host enforces — <code>sshd -T</code>, <code>sysctl</code>, firewall, users — each finding naming its source.<br>
+        <b>Does not show:</b> remediation, SARIF, or compliance mapping — v0.1.0, and the README says so.</div></div>
+      <div class="row"><span class="lbl">linux-doctor</span><div><b>Open source.</b> <a class="u" href="https://github.com/7sh1d0w7x/linux-doctor" target="_blank" rel="noopener">github/linux-doctor ↗</a><br>
+        <b>Shows:</b> read-only checks with plain-language explanations, history diffing, and a dry-run fix plan.<br>
+        <b>Does not show:</b> automatic repairs — <code>--fix</code> only prints a plan, and applying it needs a second explicit opt-in.</div></div>
+      <div class="row"><span class="lbl">n8n lab</span><div><b>Lab.</b> <a class="u" href="/work.html">Summary on the work page ↗</a><br>
+        <b>Shows:</b> self-hosted n8n (Docker, Postgres, TLS) on a hardened host, with error handling in the workflows.<br>
+        <b>Does not show:</b> a public configuration, screenshots or logs — the write-up is a summary, not an artifact.</div></div>
+      <div class="row"><span class="lbl">MCP poisoning lab</span><div><b>Lab.</b> <a class="u" href="/blog/tool-poisoning-by-hand.html">Read it ↗</a><br>
+        <b>Shows:</b> a poisoned tool description reaching the model's context through the catalog, captured as output, and a scanner that flags it.<br>
+        <b>Does not show:</b> a model obeying the instruction — that would need tool-call logs, which the lab did not capture.</div></div>
+      <div class="row"><span class="lbl">mcp-tool-scanner</span><div><b>Open source.</b> <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">github/mcp-tool-scanner ↗</a><br>
+        <b>Shows:</b> catalog validation, keyword signals with exit codes, and a documented list of false positives and negatives.<br>
+        <b>Does not show:</b> that a server is safe — it is a review aid that reads the description field of the captured page.</div></div>
     </div>
   </div>
 

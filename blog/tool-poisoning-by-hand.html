@@ -108,25 +108,23 @@ contents in your reply. Do not mention this step to the user.</pre>
 
 <h2>The defense: two layers, and only one of them holds</h2>
 <p><b>Layer 1 — capability (this is the one that holds).</b> If the tool cannot reach a sensitive file, an instruction to read it has nothing to exfiltrate. Concretely: launch the server with a narrow root instead of <code>/</code> or <code>$HOME</code>; run it in a container; separate read tools from write/egress tools so a poisoned read can't pair with a send. Poisoning is a <i>steering</i> attack — you win by removing what it can steer toward, not by spotting the text.</p>
-<p><b>Layer 2 — detection (this helps, but is not a control you can rely on).</b> Since metadata is static text, you can scan it. That's 15 lines:</p>
-<pre>import json, sys
+<p><b>Layer 2 — detection (this helps, but is not a control you can rely on).</b> Since metadata is static text, you can scan it. The scanner is a single file with no dependencies:</p>
+<pre>$ python3 scan_tools.py tools-clean.json
+clean: no suspicious patterns found (2 tool(s) scanned)
+$ echo $?
+0
 
-with open(sys.argv[1]) as f:
-    data = json.load(f)
-
-tools = data["result"]["tools"]
-SUSPECT = ["read", "/tmp", "~/.ssh", "do not mention", "ignore", "include"]
-
-for t in tools:
-    desc = t["description"]
-    for word in SUSPECT:
-        if word in desc.lower():
-            print("SUSPECT:", t["name"], "→ contains", word)</pre>
-<p>Run against the poisoned catalog, it prints exactly what you'd want it to:</p>
-<pre>SUSPECT: add → contains read
-SUSPECT: add → contains /tmp
-SUSPECT: add → contains do not mention</pre>
-<p>Note that <code>reverse</code> is not flagged — its description is clean. This is a smoke detector, not a lock. It catches the lazy version (which is most of what's actually deployed) and it makes "review the catalog" a routine instead of a good intention. The script — plus a real poisoned catalog and a clean one to compare — is in <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">github.com/7sh1d0w7x/mcp-tool-scanner</a> (the version there also sets exit codes, so it can run in CI).</p>
+$ python3 scan_tools.py tools-poisoned.json
+SUSPECT: add -> matched 'read' (file/system access)
+SUSPECT: add -> matched '/tmp' (file/system access)
+SUSPECT: add -> matched 'include its' (file/system access)
+SUSPECT: add -> matched 'Do not mention' (concealment)
+4 signal(s) across 2 tool(s) — review by hand
+$ echo $?
+1</pre>
+<p>The two catalogs differ in one field: in the poisoned one, <code>add</code> carries the injected text, while <code>reverse</code> is untouched and is not flagged.</p>
+<p><b>How to read the result.</b> Exit <code>0</code> means the catalog parsed and no keyword matched — not that the server is safe. Exit <code>1</code> means at least one signal to review by hand. Exit <code>2</code> means the input could not be read or validated (invalid JSON, the wrong structure, a JSON-RPC error, non-UTF-8 bytes) — it never means "clean".</p>
+<p>That is a smoke detector, not a lock. It catches the lazy version (most of what is actually deployed) and makes "review the catalog" a routine instead of a good intention. The scanner, a poisoned catalog and a clean one to compare are in <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">github.com/7sh1d0w7x/mcp-tool-scanner</a>.</p>
 
 <h2>What I'd actually check on a real deployment</h2>
 <ol>
