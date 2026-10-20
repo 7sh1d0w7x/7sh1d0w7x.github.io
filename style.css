@@ -175,6 +175,7 @@
   .post ul{margin:0 0 14px 20px;color:var(--mut)}
   .post li{margin-bottom:6px}
   .post pre{background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:14px 16px;overflow:auto;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink);margin:0 0 16px}
+  .post pre.wrap{white-space:pre-wrap;overflow-wrap:anywhere}
   .post code{font-family:"JetBrains Mono",monospace;font-size:13.5px;color:var(--acc)}
   .post .cta{margin-top:34px;padding:18px 20px;border:1px solid var(--line2);border-radius:12px;background:var(--panel)}
   .post .cta p{margin:0}
