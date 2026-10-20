@@ -87,8 +87,8 @@
         <li>Optional: Nginx, TLS, Docker, monitoring</li>
       </ul>
       <p class="sub"><b>Evidence:</b> a <a class="u" href="/blog/hardening-report-example.html">worked lab report</a>, plus the two open-source tools below.</p>
-      <p class="sub"><b>You receive:</b> a written before/after report, the raw evidence, and the rollback step for each change.</p>
-      <p class="sub"><b>Rollback:</b> every change comes with the command or file that reverts it. Full reversal depends on the snapshot taken before the work and on what the change touched — where a clean rollback is not possible, the report says so before the change is applied.</p>
+      <p class="sub"><b>You receive:</b> a written before/after report, the raw evidence, and the rollback step for each change — or the reason it has none.</p>
+      <p class="sub"><b>Rollback:</b> each change is listed with its rollback step, or with why it has none. Full reversal depends on the snapshot taken before the work and on what the change touched — where a clean rollback is not possible, the report says so before the change is applied.</p>
       <p class="sub"><b>Not included:</b> application code review, compliance certification, 24/7 monitoring, changes outside the agreed window.</p>
       <p class="sub"><b>Next step:</b> tell me the OS, what runs on it, what must not change, and when a change window is possible.</p>
       <a class="b b-pri" href="#contact">./harden-my-server</a>
@@ -220,7 +220,7 @@
   <div style="margin-top:14px">
     <details open><summary>What server do I need?</summary><p>Any Debian/Ubuntu VPS or bare-metal box (Hetzner, DigitalOcean, your host). I work over SSH — you don't have to do anything.</p></details>
     <details><summary>How do I pay?</summary><p>Fixed price, agreed up front, milestone-based. You approve the scope before I start.</p></details>
-    <details><summary>Will it break my running site?</summary><p>Not silently. Every change is listed in writing before it happens, with its possible effect and the exact command that undoes it. Changes run inside a window you agree to, one type at a time, and I open a second session before touching anything that could affect access. Anything that can interrupt traffic is proposed separately — never folded into the same pass.</p></details>
+    <details><summary>Will it break my running site?</summary><p>Not silently. Every change is listed in writing before it happens, with its possible effect and the rollback step we agreed. Where a clean rollback depends on the snapshot taken beforehand — or is not possible at all — that is said before the change, not after. Changes run inside a window you agree to, one type at a time, and I open a second session before touching anything that could affect access. Anything that can interrupt traffic is proposed separately — never folded into the same pass.</p></details>
     <details><summary>Can you do both — harden and automate?</summary><p>Yes, that's the sweet spot: n8n self-hosted on a server that's actually locked down. Cheaper bundled.</p></details>
     <details><summary>Do you use my data?</summary><p>I work over SSH on your server, and reports and evidence are sent to you directly by email. What I keep after delivery, and for how long, is agreed in writing before the engagement starts. This contact form has no backend — it only opens your email app.</p></details>
   </div>

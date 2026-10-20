@@ -124,6 +124,19 @@ $ echo $?
 1</pre>
 <p>The two catalogs differ in one field: in the poisoned one, <code>add</code> carries the injected text, while <code>reverse</code> is untouched and is not flagged.</p>
 <p><b>How to read the result.</b> Exit <code>0</code> means the catalog parsed and no keyword matched — not that the server is safe. Exit <code>1</code> means at least one signal to review by hand. Exit <code>2</code> means the input could not be read or validated (invalid JSON, the wrong structure, a JSON-RPC error, non-UTF-8 bytes) — it never means "clean".</p>
+<p><b>Reproduce it.</b> The output above came from the scanner at commit
+<code>7bc3a6e</code>, run locally on two files checked into the repository — no server, no
+agent, no network access:</p>
+<pre>git clone https://github.com/7sh1d0w7x/mcp-tool-scanner
+cd mcp-tool-scanner
+git checkout 7bc3a6e
+
+python3 scan_tools.py examples/tools-clean.json;    echo "exit $?"
+python3 scan_tools.py examples/tools-poisoned.json; echo "exit $?"</pre>
+<p>The two catalogs differ in exactly one field: the <code>add</code> description. Everything
+else — the tool names, the schemas, the second tool — is identical.</p>
+
+<p><b>What this demonstrates, and what it does not.</b> It demonstrates heuristic detection of metadata: a keyword-level scanner flagging a description that carries an instruction. It does not demonstrate that an agent executed that instruction, and it does not make a catalog with no signals safe — the scanner reads the description field of the page it is given.</p>
 <p>That is a smoke detector, not a lock. It catches the lazy version (most of what is actually deployed) and makes "review the catalog" a routine instead of a good intention. The scanner, a poisoned catalog and a clean one to compare are in <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">github.com/7sh1d0w7x/mcp-tool-scanner</a>.</p>
 
 <h2>What I'd actually check on a real deployment</h2>
