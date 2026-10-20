@@ -253,6 +253,24 @@
 </div></footer>
 
 <script>
+  // Anchor targets must clear the sticky header. Its height changes with the nav
+  // wrapping (108/83/62px), so measure it instead of hard-coding one offset.
+  (function(){
+    var hdr = document.querySelector('header');
+    if (!hdr) return;
+    function sync(){
+      document.documentElement.style.scrollPaddingTop = (hdr.offsetHeight + 12) + 'px';
+    }
+    sync();
+    window.addEventListener('resize', sync);
+    window.addEventListener('load', function(){
+      sync();
+      if (!location.hash) return;
+      var t = document.getElementById(location.hash.slice(1));
+      if (t && t.getBoundingClientRect().top < hdr.offsetHeight) t.scrollIntoView();
+    });
+  })();
+
   document.getElementById('y').textContent = new Date().getFullYear();
   var cform = document.getElementById('cform');
   if (cform) cform.addEventListener('submit', function(e){
