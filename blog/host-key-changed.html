@@ -59,6 +59,8 @@ Offending ECDSA key in /home/user/.ssh/known_hosts:12
 Host key for [127.0.0.1]:2222 has changed and you have requested strict checking.
 Host key verification failed.</pre>
 
+<p>One detail in that message looks like a contradiction: it names an <b>ED25519</b> fingerprint, then an <b>ECDSA</b> entry in <code>known_hosts</code>. It is not a contradiction — the stored entry was ECDSA, the server now offers ED25519. Same host and port, different key: that is exactly the change the check is reporting.</p>
+
 <p>The honest reaction is to press <code>yes</code> and move on. That is also how people get owned. This post is the ten minutes I spent instead, and the rule I came out with.</p>
 
 <h2>What a host key is</h2>
@@ -90,7 +92,7 @@ ssh-keygen -R "[127.0.0.1]:2222"     # removes it</pre>
 
 <h2>Two situations, one question</h2>
 
-<p>There are only two reasons a host key changes, and they are not equally common:</p>
+<p>A changed key has two possible explanations, and they are not equally common. Everything else — a reinstall, a migration, an ephemeral container — is a variant of the first:</p>
 
 <pre class="wrap">legitimate ..... you reinstalled the server, recreated the container,
                  migrated to a new provider, or the provider rotated the keys
