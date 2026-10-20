@@ -4,23 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What a hardening report actually looks like (real example) — 7sh1d0w7x</title>
-<meta name="description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta name="description" content="Most hardening is sold as a list of advice. Here's what the report itself looks like — before/after, raw evidence, and the section most vendors leave out. Worked example from my own lab.">
 <meta property="og:title" content="What a hardening report actually looks like (real example) — 7sh1d0w7x">
-<meta property="og:description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta property="og:description" content="Most hardening is sold as a list of advice. Here's what the report itself looks like — before/after, raw evidence, and the section most vendors leave out. Worked example from my own lab.">
 <meta property="og:type" content="article">
 <meta name="theme-color" content="#0a0c0b">
 <link rel="canonical" href="https://7sh1d0w7x.github.io/blog/hardening-report-example.html">
 <meta property="og:site_name" content="7sh1d0w7x">
 <meta property="og:type" content="website">
 <meta property="og:title" content="What a hardening report actually looks like (real example) — 7sh1d0w7x">
-<meta property="og:description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta property="og:description" content="Most hardening is sold as a list of advice. Here's what the report itself looks like — before/after, raw evidence, and the section most vendors leave out. Worked example from my own lab.">
 <meta property="og:url" content="https://7sh1d0w7x.github.io/blog/hardening-report-example.html">
 <meta property="og:image" content="https://7sh1d0w7x.github.io/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="What a hardening report actually looks like (real example) — 7sh1d0w7x">
-<meta name="twitter:description" content="Most hardening is sold as a list of advice. Here's the actual report a client gets — before/after, raw evidence, and the section most vendors leave out.">
+<meta name="twitter:description" content="Most hardening is sold as a list of advice. Here's what the report itself looks like — before/after, raw evidence, and the section most vendors leave out. Worked example from my own lab.">
 <meta name="twitter:image" content="https://7sh1d0w7x.github.io/img/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,7 +50,9 @@
 
 <p>Most "server hardening" is sold as a list of advice. <i>Disable root login. Use keys. Set up a firewall.</i> That list is free on the internet — you don't need to pay anyone for it.</p>
 
-<p>What you actually pay for is <b>evidence</b>: proof that a specific setting on a specific machine was checked, changed, and verified. So here's the report a client gets from me, filled in with a real (sanitized) example. No pitch. Just the document.</p>
+<p>What you actually pay for is <b>evidence</b>: proof that a specific setting on a specific machine was checked, changed, and verified.</p>
+
+<p><b>Where this example comes from:</b> it is my own lab, a Fedora container I hardened for this write-up — <b>not a client engagement</b>. The values and raw output are real; the machine is mine. I say this at the start because a sample report is only useful if you know what you are looking at.</p>
 
 <h2>The shape of it</h2>
 <pre>1. SUMMARY          what was at risk, what's closed now
@@ -60,14 +62,15 @@
 5. WHAT STAYED OPEN what wasn't fixed, and why
 6. RECOMMENDATIONS  next steps, optional</pre>
 
-<p>Section 5 is the one almost nobody includes. Keep reading — it's the reason the rest is trustworthy.</p>
+<p>Section 5 is the part that is easy to skip. It is also the part that makes the rest checkable — it is where the report states what it did not cover and where its conclusions stop.</p>
 
-<h2>The example: a 2-core VPS running n8n</h2>
-<p>Small box, one purpose, exposed to the internet. Client asked: "is this thing safe enough to leave running?" Here's the summary section, verbatim:</p>
+<h2>The example: a small container in my lab</h2>
+<p>One purpose, exposed to the internet on a non-standard SSH port. Here is the summary section, verbatim:</p>
 
 <pre>BEFORE: SSH accepted passwords (brute-forceable), root login
-        allowed with a password, X11 forwarding on, no firewall
-        rules persisted, backup existed but had never been restored.
+        permitted with a key only (PermitRootLogin without-password),
+        X11 forwarding on, no firewall rules persisted, backup existed
+        but had never been restored.
 
 AFTER:  SSH keys only, root login disabled, X11 forwarding off,
         nftables default-deny with 2 ports open, backup restored
@@ -106,7 +109,7 @@ table inet filter {
     chain input {
         type filter hook input priority 0; policy drop;</pre>
 
-<p>Note the first command. That command doesn't read the config file. It asks the running daemon what it really applies. That distinction matters more than it sounds, and it's the trap in the next section.</p>
+<p>Note the first command. <code>sshd -T</code> does not contact a running daemon: it parses the configuration — including every <code>Include</code> — the way the daemon does at startup, and prints the values that would apply. That is what makes it better than reading the file by hand: it resolves the include chain. It is <b>not</b> proof that the running daemon has reloaded; for that, reload and test a real connection.</p>
 
 <h2>The trap that ate an hour</h2>
 <p>This one is worth publishing because it's the kind of thing that makes a "hardened" server not actually hardened.</p>
@@ -122,31 +125,41 @@ table inet filter {
 <pre>/etc/ssh/sshd_config.d/10-hardening.conf
     X11Forwarding no</pre>
 
-<p>Lower number, read earlier, wins. Lesson: <b>what's written is not what's applied.</b> Always verify against the running service, never against the file.</p>
+<p>Lower number, read earlier, wins. Lesson: <b>what's written is not what's applied.</b> Verify the effective configuration rather than the line you edited — and after a reload, test a real connection instead of trusting the output alone.</p>
 
 <h2>Section 5: what stayed open</h2>
 <p>Here's the part that builds more trust than any success claim:</p>
 
 <pre>1. No intrusion detection (auditd/AIDE) — out of scope for this
    engagement; monitoring is a separate service.
-2. Backup restore was tested manually, not automated — the client
-   should schedule a quarterly restore test.</pre>
+2. Backup restore was tested manually, not automated — schedule a
+   quarterly restore test.</pre>
 
-<p>A report with zero open items can't be checked, so you have no reason to trust it. A report that names exactly what's still open is checkable, and that's why it can be trusted.</p>
+<p>A report can end with <b>zero open items</b> for the scope it covered. That is a valid result — it means nothing actionable was found in what was checked. It is not proof that the server is secure, and it is not a reason to distrust the report either.</p>
+
+<p>What makes a report checkable is not the number of open items. It is whether it states:</p>
+<ul>
+  <li>what was checked;</li>
+  <li>the evidence and the results;</li>
+  <li>what was <b>not</b> checked;</li>
+  <li>any risk that remains;</li>
+  <li>the limits of its own conclusions.</li>
+</ul>
+<p>A zero-finding report that documents those five things is useful. One that omits them is not, whatever it concluded.</p>
 
 <h2>How to judge anyone selling you this</h2>
 <p>If you're shopping for hardening (from me or anyone else), ask for three things:</p>
 
 <pre>1. BEFORE / AFTER with the reason per setting — not a generic checklist
 2. RAW OUTPUT as evidence — not screenshots of a tool's green ticks
-3. WHAT STAYED OPEN — a report with zero open items is hiding something</pre>
+3. WHAT STAYED OPEN — what was not checked, and any risk that remains</pre>
 
 <p>If a vendor can't produce those three, you're buying advice you could have found for free.</p>
 
 <h2>The honest part</h2>
-<p>This example is sanitized — hostname, IPs and client details are changed, and the values are from a lab box I run for exactly this purpose. But the structure, the commands, and the trap are real: the drop-in override above cost me an hour and is now written into the runbook so it doesn't cost the next one.</p>
+<p>Hostnames and IPs in the example are changed, and the values come from a lab box I run for exactly this purpose. The structure, the commands and the trap are real: the drop-in override above cost me an hour and is now written into the runbook so it does not cost the next one.</p>
 
-<p>That's the whole point of doing the work in a lab before touching a client's box. The mistakes are free there.</p>
+<p>That is the whole point of doing the work in a lab before touching a production box. The mistakes are free there.</p>
 
 <p style="margin-top:34px;padding-top:18px;border-top:1px solid var(--bd)"><b>Need this done on your box?</b> <a class="u" href="/#contact">Get in touch</a> — async, no calls required. I'll tell you upfront what's in scope and what isn't.</p>
 

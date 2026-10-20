@@ -4,21 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>7sh1d0w7x — Linux hardening & self-hosted automation</title>
-<meta name="description" content="I harden Linux servers and self-host your automation. Fixed price, documented, in 48h.">
+<meta name="description" content="I harden Linux servers and self-host your automation. Fixed price, documented, scope agreed up front.">
 <meta property="og:title" content="Linux hardening & self-hosted automation">
 <meta name="theme-color" content="#0a0c0b">
 <link rel="canonical" href="https://7sh1d0w7x.github.io/">
 <meta property="og:site_name" content="7sh1d0w7x">
 <meta property="og:type" content="website">
 <meta property="og:title" content="7sh1d0w7x — Linux hardening & self-hosted automation">
-<meta property="og:description" content="I harden Linux servers and self-host your automation. Fixed price, documented, in 48h.">
+<meta property="og:description" content="I harden Linux servers and self-host your automation. Fixed price, documented, scope agreed up front.">
 <meta property="og:url" content="https://7sh1d0w7x.github.io/">
 <meta property="og:image" content="https://7sh1d0w7x.github.io/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="7sh1d0w7x — Linux hardening & self-hosted automation">
-<meta name="twitter:description" content="I harden Linux servers and self-host your automation. Fixed price, documented, in 48h.">
+<meta name="twitter:description" content="I harden Linux servers and self-host your automation. Fixed price, documented, scope agreed up front.">
 <meta name="twitter:image" content="https://7sh1d0w7x.github.io/img/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,7 +50,7 @@
       <a class="b b-pri" href="#services">./see-services</a>
       <a class="b b-line" href="#contact">./get-in-touch</a>
     </div>
-    <div class="meta"><span>48h delivery</span><span>fixed price</span><span>EU-based</span><span>open source</span></div>
+    <div class="meta"><span>timeline agreed up front</span><span>fixed price</span><span>EU-based</span><span>open source</span></div>
   </div>
   <div class="term">
     <div class="bar">
@@ -70,58 +70,99 @@
 </div></div>
 
 <section id="services"><div class="wrap">
-  <div class="shead"><span class="idx">[01]</span><h2>What I do</h2></div>
-  <p class="sub">Fixed scope, fixed price, done in days — not weeks. You get a short, plain-language report, not a black box.
-  <br><br><b style="color:var(--acc);font-family:'JetBrains Mono',monospace">// launch pricing</b> — early clients get the launch rate above (in exchange for an honest testimonial once it's done).</p>
+  <div class="shead"><span class="idx">[01]</span><h2>Services, evidence &amp; deliverables</h2></div>
+  <p class="sub">Fixed scope, fixed price. You get a short, plain-language report — not a black box.
+  <br><br><b style="color:var(--acc);font-family:'JetBrains Mono',monospace">// launch pricing</b> — the launch rate applies to the first clients. A testimonial is welcome, never required.</p>
 
   <div class="offers">
     <div class="offer">
       <h3><span class="n">›</span> Server Hardening</h3>
       <div class="price">from €179 / server · <b style="color:var(--acc)">launch price</b> (€299 after)</div>
+      <p class="sub"><b>Problem.</b> A server you inherited or set up quickly: you don't know what is exposed, and you want it fixed — not just described.</p>
       <ul>
-        <li>SSH locked to keys only (no root, no passwords)</li>
-        <li>Firewall — default-deny, only what you need</li>
-        <li>fail2ban · automatic security updates · sane sysctl</li>
-        <li>Before/after report + how to roll back</li>
-        <li>Optional: Nginx, SSL, Docker, monitoring</li>
+        <li>Initial assessment: what is exposed, and what is worth changing</li>
+        <li>Implementing the changes agreed in writing — SSH keys only, default-deny firewall, fail2ban, automatic updates, sysctl values that fit the host</li>
+        <li>Verification after each change, before the next one</li>
+        <li>Before/after report, with the evidence for each setting</li>
+        <li>Optional: Nginx, TLS, Docker, monitoring</li>
       </ul>
+      <p class="sub"><b>Evidence:</b> a <a class="u" href="/blog/hardening-report-example.html">worked lab report</a>, plus the two open-source tools below.</p>
+      <p class="sub"><b>You receive:</b> a written before/after report, the raw evidence, and the rollback step for each change — or the reason it has none.</p>
+      <p class="sub"><b>Rollback:</b> each change is listed with its rollback step, or with why it has none. Full reversal depends on the snapshot taken before the work and on what the change touched — where a clean rollback is not possible, the report says so before the change is applied.</p>
+      <p class="sub"><b>Not included:</b> application code review, compliance certification, 24/7 monitoring, changes outside the agreed window.</p>
+      <p class="sub"><b>Next step:</b> tell me the OS, what runs on it, what must not change, and when a change window is possible.</p>
       <a class="b b-pri" href="#contact">./harden-my-server</a>
     </div>
     <div class="offer">
       <h3><span class="n">›</span> Self-Hosted n8n</h3>
       <div class="price">from €400 · <b style="color:var(--acc)">launch price</b> (€650 after)</div>
+      <p class="sub"><b>Problem.</b> Cloud automation bills every month and keeps your data on someone else's servers.</p>
       <ul>
-        <li>n8n on <b>your own server</b> (Docker + Postgres + SSL)</li>
-        <li>Your data stays in the EU — €0 monthly SaaS fee</li>
+        <li>n8n on <b>your own server</b> (Docker + Postgres + TLS)</li>
+        <li>Host hardened first — and no monthly SaaS fee</li>
+        <li>Backup and a restore procedure you can actually test</li>
         <li>Workflows: form → CRM, invoices, reminders, AI summaries</li>
-        <li>Hardened host + backup + monitoring included</li>
-        <li>Migrate from Zapier/Make and cut the bill</li>
+        <li>Migration from Zapier/Make for the agreed workflows</li>
       </ul>
+      <p class="sub"><b>Evidence:</b> a <a class="u" href="/work.html">lab summary and one illustrative graphic</a> — no configuration, workflow exports or logs are published.</p>
+      <p class="sub"><b>You receive:</b> a running instance, documented access, the backup/restore steps, and the agreed workflows.</p>
+      <p class="sub"><b>Not included:</b> workflows you have not specified, third-party subscriptions, data migration beyond the agreed list.</p>
+      <p class="sub"><b>Next step:</b> list the workflows and where the data lives today.</p>
       <a class="b b-pri" href="#contact">./set-up-my-n8n</a>
     </div>
     <div class="offer wide">
       <h3><span class="n">›</span> MCP / Agent Security Review</h3>
       <div class="price">from €99 · <b style="color:var(--acc)">launch price</b> (AI audit + agent hardening)</div>
+      <p class="sub"><b>Problem.</b> An agent or MCP server can usually reach more than you think, and the tool descriptions it reads are part of the prompt.</p>
       <ul>
         <li>MCP servers: exposed? authenticated? least-privilege? (default-deny, not <code>0.0.0.0</code>)</li>
-        <li>Tool poisoning &amp; prompt injection — I test them by hand and show you the real output</li>
+        <li>Tool descriptions that carry hidden instructions — checked by hand, with the raw catalog output</li>
         <li>Blast radius: which read tools pair with which write/egress tools (that's your exfil path)</li>
-        <li>Audit trail design — every tool call logged with a <code>trigger_source</code></li>
-        <li>Written report: what's exposed, top 3 fixes, how to verify each · async, fixed price</li>
+        <li>Audit trail design — how a tool call is logged and attributed</li>
       </ul>
+      <p class="sub"><b>Evidence:</b> the <a class="u" href="/blog/tool-poisoning-by-hand.html">poisoning lab</a> and the <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">scanner</a> below.</p>
+      <p class="sub"><b>You receive:</b> a written report — what is exposed, the top 3 fixes, how to verify each, and the scanner output for your catalog.</p>
+      <p class="sub"><b>Not included:</b> a guarantee that an agent cannot be manipulated, code fixes, compliance certification, penetration testing.</p>
+      <p class="sub"><b>Next step:</b> name the server or integration, and what the agent is allowed to touch.</p>
       <a class="b b-pri" href="#contact">./review-my-agents</a>
     </div>
   </div>
 
+  <div id="evidence">
+    <h3 style="font-size:20px;margin-top:46px">Evidence you can inspect</h3>
+    <p class="sub">Each item is public: a report, a repository, or a lab write-up. Where a public artifact does not exist, the entry says so.</p>
+    <div class="pf">
+      <div class="row"><span class="lbl">hardening report</span><div><b>Lab.</b> A Fedora container I hardened for the write-up. <a class="u" href="/blog/hardening-report-example.html">Read it ↗</a><br>
+        <b>Shows:</b> the report format, the output attached to each setting, and the drop-in override trap.<br>
+        <b>Does not show:</b> a client engagement, or that any specific server is secure.</div></div>
+      <div class="row"><span class="lbl">state-witness</span><div><b>Open source.</b> <a class="u" href="https://github.com/7sh1d0w7x/state-witness" target="_blank" rel="noopener">github/state-witness ↗</a><br>
+        <b>Shows:</b> checks against what the host enforces — <code>sshd -T</code>, <code>sysctl</code>, firewall, users — each finding naming its source.<br>
+        <b>Does not show:</b> remediation, SARIF, or compliance mapping — v0.1.0, and the README says so.</div></div>
+      <div class="row"><span class="lbl">linux-doctor</span><div><b>Open source.</b> <a class="u" href="https://github.com/7sh1d0w7x/linux-doctor" target="_blank" rel="noopener">github/linux-doctor ↗</a><br>
+        <b>Shows:</b> read-only checks with plain-language explanations, history diffing, and a dry-run fix plan.<br>
+        <b>Does not show:</b> automatic repairs — <code>--fix</code> only prints a plan, and applying it needs a second explicit opt-in.</div></div>
+      <div class="row"><span class="lbl">n8n lab</span><div><b>Lab.</b> <a class="u" href="/work.html">Summary and one illustrative graphic on the work page ↗</a><br>
+        <b>Public:</b> a written summary and one illustrative graphic of the workflow graph.<br>
+        <b>Not public:</b> the compose file, exported workflows and logs — nothing that would let you reproduce or independently verify the setup.<br>
+        <b>Does not show:</b> that the installation or the workflows were validated by anyone else. The graphic is illustrative, not a reproduction artifact.</div></div>
+      <div class="row"><span class="lbl">MCP poisoning lab</span><div><b>Lab.</b> <a class="u" href="/blog/tool-poisoning-by-hand.html">Read it ↗</a><br>
+        <b>Shows:</b> a poisoned tool description reaching the model's context through the catalog, captured as output, and a scanner that flags it.<br>
+        <b>Does not show:</b> a model obeying the instruction — that would need tool-call logs, which the lab did not capture.</div></div>
+      <div class="row"><span class="lbl">mcp-tool-scanner</span><div><b>Open source.</b> <a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner" target="_blank" rel="noopener">github/mcp-tool-scanner ↗</a><br>
+        <b>Shows:</b> catalog validation, keyword signals with exit codes, and a documented list of false positives and negatives.<br>
+        <b>Does not show:</b> that a server is safe — it is a review aid that reads the description field of the captured page.</div></div>
+    </div>
+  </div>
+
   <div class="extras">
-    <div class="extra"><h4>backup --tested</h4><p>3-2-1 backup with a real restore test — proof it comes back, not “job completed”.</p></div>
-    <div class="extra"><h4>monitor --monthly</h4><p>Uptime, alerts and patching. See problems before your customers do.</p></div>
-    <div class="extra"><h4>docker --harden</h4><p>Non-root, dropped capabilities, read-only FS, image provenance, secrets.</p></div>
+    <div class="extra"><h4>backup --tested</h4><p>3-2-1 backup with a restore test — proof the data comes back, not “job completed”.</p></div>
+    <div class="extra"><h4>monitor --monthly</h4><p>Uptime and patching, by arrangement. Not 24/7 on-call.</p></div>
+    <div class="extra"><h4>docker --harden</h4><p>Non-root, dropped capabilities, read-only filesystem, image provenance, secrets.</p></div>
   </div>
 
   <div class="entry">
-    <h3>Not sure where to start? <span class="a">Server Health Check · €49 launch</span></h3>
-    <p>I run <b>linux-doctor</b> — my open-source tool (14★ on GitHub) — on your server and hand you a prioritized report: what's wrong, what matters, what to fix first. If you continue with hardening, the €49 comes off the price.</p>
+    <h3>Assessment only? <span class="a">Server Health Check · €49</span></h3>
+    <p>I run <b>linux-doctor</b> and a manual pass on your server, and hand you a prioritized report: what is exposed, what matters, what to fix first — with the evidence behind each finding. <b>Nothing on the system is changed</b>, and implementing the fixes is not included. If you go on to hardening, the €49 comes off the price. It is an entry option, not a required step before hardening — you can start with any service.</p>
     <a class="b b-line" href="#contact">./get-a-health-check</a>
   </div>
 </div></section>
@@ -129,15 +170,16 @@
 <section><div class="wrap">
   <div class="band">
     <h3><span class="a">✓ guarantee</span> — if there's nothing to fix, you don't pay.</h3>
-    <p>If I run the audit and find nothing worth fixing on your server, you don't pay. I'd rather be honest than bill you for nothing. Nothing sensitive ever leaves your server.</p>
+    <p>If the audit finds no medium- or high-severity finding, you don't pay. I work over SSH with a key you can revoke, and changes happen only inside a window you agree to — each one with a documented rollback.</p>
   </div>
 </div></section>
 
 <section><div class="wrap">
-  <div class="shead"><span class="idx">[02]</span><h2>How it fits together</h2></div>
-  <p class="sub">Start small, grow only if it's worth it. Every step sets up the next.</p>
+  <div class="shead"><span class="idx">[02]</span><h2>How it works</h2></div>
+  <p class="sub">Every service follows the same steps: <b>written request → scope agreed → quote → agreed work → verification and handover</b>. Nothing starts before the scope and the price are agreed in writing.</p>
+  <p class="sub">The three steps below are a common path, not a requirement — you can start at any of them.</p>
   <div class="funnel">
-    <div class="fstep"><div class="n">01 — start</div><h4>Health Check · €49</h4><p>I run linux-doctor and give you a prioritized report.</p></div>
+    <div class="fstep"><div class="n">01 — assess</div><h4>Health Check · €49</h4><p>Assessment only: a prioritized report, no changes to the system.</p></div>
     <div class="farrow">→</div>
     <div class="fstep"><div class="n">02 — fix</div><h4>Hardening · €179+</h4><p>I fix the issues and lock the server down. The €49 is credited.</p></div>
     <div class="farrow">→</div>
@@ -170,7 +212,7 @@
     <div><img src="/img/state-witness.gif" width="1000" height="620" alt="state-witness running in a terminal: deployment checks, sysctl hardening, firewall" loading="lazy"><h4>state-witness</h4><p>A security auditor for Linux (Rust) — SSH, firewall, users, sysctl. The same checks I run on your server.</p><p style="margin-top:10px"><a class="u" href="https://github.com/7sh1d0w7x/state-witness" target="_blank" rel="noopener">github/state-witness ↗</a></p></div>
     <div><img src="/img/linux-doctor.gif" width="1000" height="640" alt="linux-doctor running in a terminal: health score, START HERE action, findings with fixes" loading="lazy"><h4>linux-doctor</h4><p>Read-only Linux health checks that explain problems and remember what changed. 14★.</p><p style="margin-top:10px"><a class="u" href="/linux-doctor.html">read more ↗</a></p></div>
   </div>
-  <p style="margin-top:28px"><a class="u" href="/work.html">case-studies — tested backup, self-hosted automation, and the tooling behind them ↗</a></p>
+  <p style="margin-top:28px"><a class="u" href="/work.html">labs and open source — tested backup, self-hosted automation, and the tooling behind them ↗</a></p>
   <p style="margin-top:12px"><a class="u" href="/blog/tool-poisoning-by-hand.html">new — I poisoned my own MCP server: hands-on tool poisoning, real client output, and the scanner that catches it ↗</a></p>
 </div></section>
 
@@ -179,9 +221,9 @@
   <div style="margin-top:14px">
     <details open><summary>What server do I need?</summary><p>Any Debian/Ubuntu VPS or bare-metal box (Hetzner, DigitalOcean, your host). I work over SSH — you don't have to do anything.</p></details>
     <details><summary>How do I pay?</summary><p>Fixed price, agreed up front, milestone-based. You approve the scope before I start.</p></details>
-    <details><summary>Will it break my running site?</summary><p>No. I take a snapshot first, work read-only where possible, and document every change plus how to roll back.</p></details>
+    <details><summary>Will it break my running site?</summary><p>Not silently. Every change is listed in writing before it happens, with its possible effect and the rollback step we agreed. Where a clean rollback depends on the snapshot taken beforehand — or is not possible at all — that is said before the change, not after. Changes run inside a window you agree to, one type at a time, and I open a second session before touching anything that could affect access. Anything that can interrupt traffic is proposed separately — never folded into the same pass.</p></details>
     <details><summary>Can you do both — harden and automate?</summary><p>Yes, that's the sweet spot: n8n self-hosted on a server that's actually locked down. Cheaper bundled.</p></details>
-    <details><summary>Do you use my data?</summary><p>No. Everything stays on your infrastructure; nothing is routed through third parties.</p></details>
+    <details><summary>Do you use my data?</summary><p>I work over SSH on your server, and reports and evidence are sent to you directly by email. What I keep after delivery, and for how long, is agreed in writing before the engagement starts. This contact form has no backend — it only opens your email app.</p></details>
   </div>
 </div></section>
 
@@ -190,15 +232,17 @@
   <div class="contact">
     <div>
       <p class="sub">Tell me your setup and I'll reply with a fixed price — no sales pressure. Or email <a class="u" href="mailto:zshadowdev@duck.com">zshadowdev@duck.com</a>.</p>
-      <p class="sub" style="margin-top:20px"><b style="color:var(--acc);font-family:'JetBrains Mono',monospace">// early clients</b><br>20% off in exchange for an honest testimonial once the work is done.</p>
+      <p class="sub" style="margin-top:20px">Start with the system or integration you want looked at, the result you want, and your deadline. Do not send passwords, tokens or private keys — none are needed to quote.</p>
     </div>
     <form id="cform" novalidate>
       <div><label for="name">name</label><input id="name" name="name" type="text" placeholder="Your name" required></div>
       <div><label for="email">email</label><input id="email" name="email" type="email" placeholder="you@example.com" required></div>
-      <div><label for="setup">setup</label><input id="setup" name="setup" type="text" placeholder="e.g. Ubuntu 24.04 VPS, Nginx + Docker"></div>
-      <div><label for="msg">need</label><textarea id="msg" name="msg" placeholder="hardening · n8n self-hosted · monitoring · not sure yet…"></textarea></div>
+      <div><label for="setup">system / integration</label><input id="setup" name="setup" type="text" placeholder="e.g. Ubuntu 24.04 VPS, Nginx + Docker"></div>
+      <div><label for="outcome">desired result</label><input id="outcome" name="outcome" type="text" placeholder="e.g. SSH keys only, no exposed database"></div>
+      <div><label for="deadline">deadline</label><input id="deadline" name="deadline" type="text" placeholder="e.g. before 15 Nov, or no fixed date"></div>
+      <div><label for="msg">anything else</label><textarea id="msg" name="msg" placeholder="what must not change, current worries, links…"></textarea></div>
+      <p class="note">This page has no backend. Pressing send opens your email app with this text filled in — nothing is sent or stored until you send it from your mail client.</p>
       <button class="b b-pri" type="submit">./send</button>
-      <p class="note">Opens your email app with the message ready — nothing is stored.</p>
     </form>
   </div>
 </div></section>
@@ -220,12 +264,12 @@
       return;
     }
     var subject = encodeURIComponent('Server work — ' + (f.name.value || 'enquiry'));
-    var body = encodeURIComponent('Name: '+f.name.value+'\nEmail: '+f.email.value+'\nSetup: '+f.setup.value+'\n\n'+f.msg.value);
+    var body = encodeURIComponent('Name: '+f.name.value+'\nEmail: '+f.email.value+'\nSystem / integration: '+f.setup.value+'\nDesired result: '+f.outcome.value+'\nDeadline: '+f.deadline.value+'\n\n'+f.msg.value);
     window.location.href = 'mailto:zshadowdev@duck.com?subject=' + subject + '&body=' + body;
     var note = document.getElementById('form-note');
     if (!note) { note = document.createElement('p'); note.id='form-note'; note.className='note';
       f.appendChild(note); }
-    note.innerHTML = "If your email app didn't open, write to <b>zshadowdev@duck.com</b> — same address, nothing stored.";
+    note.innerHTML = "If your email app didn't open, write to <b>zshadowdev@duck.com</b> directly.";
   });
 </script>
 </body>
