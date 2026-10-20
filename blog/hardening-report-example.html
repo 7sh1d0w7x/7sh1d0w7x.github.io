@@ -55,7 +55,7 @@
 <p><b>Where this example comes from:</b> it is my own lab, a Fedora container I hardened for this write-up — <b>not a client engagement</b>. The values and raw output are real; the machine is mine. I say this at the start because a sample report is only useful if you know what you are looking at.</p>
 
 <h2>The shape of it</h2>
-<pre>1. SUMMARY          what was at risk, what's closed now
+<pre class="wrap">1. SUMMARY          what was at risk, what's closed now
 2. METHOD           what was checked, with which command
 3. BEFORE / AFTER   table: setting · old value · new value · why
 4. EVIDENCE         raw output, not claims
@@ -130,7 +130,7 @@ table inet filter {
 <h2>Section 5: what stayed open</h2>
 <p>Here's the part that builds more trust than any success claim:</p>
 
-<pre>1. No intrusion detection (auditd/AIDE) — out of scope for this
+<pre class="wrap">1. No intrusion detection (auditd/AIDE) — out of scope for this
    engagement; monitoring is a separate service.
 2. Backup restore was tested manually, not automated — schedule a
    quarterly restore test.</pre>
@@ -150,7 +150,7 @@ table inet filter {
 <h2>How to judge anyone selling you this</h2>
 <p>If you're shopping for hardening (from me or anyone else), ask for three things:</p>
 
-<pre>1. BEFORE / AFTER with the reason per setting — not a generic checklist
+<pre class="wrap">1. BEFORE / AFTER with the reason per setting — not a generic checklist
 2. RAW OUTPUT as evidence — not screenshots of a tool's green ticks
 3. WHAT STAYED OPEN — what was not checked, and any risk that remains</pre>
 
