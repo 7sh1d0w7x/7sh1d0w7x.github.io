@@ -263,12 +263,16 @@
     }
     sync();
     window.addEventListener('resize', sync);
-    window.addEventListener('load', function(){
-      sync();
+    function fixHash(){
       if (!location.hash) return;
       var t = document.getElementById(location.hash.slice(1));
-      if (t && t.getBoundingClientRect().top < hdr.offsetHeight) t.scrollIntoView();
-    });
+      if (!t) return;
+      // Correct both under- and over-shoot: web fonts finish loading after the
+      // browser's first fragment scroll, which shifts the content above it.
+      if (Math.abs(t.getBoundingClientRect().top - hdr.offsetHeight - 12) > 4) t.scrollIntoView();
+    }
+    window.addEventListener('load', function(){ sync(); fixHash(); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ sync(); fixHash(); });
   })();
 
   document.getElementById('y').textContent = new Date().getFullYear();
