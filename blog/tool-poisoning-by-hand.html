@@ -128,26 +128,24 @@ exit 2
 
 $ printf '\xff\xfe' > bad-utf8.json
 $ python3 scan_tools.py bad-utf8.json; echo "exit $?"
-Traceback (most recent call last):
-  ... (frames omitted)
-UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
-exit 1</pre>
+error: bad-utf8.json is not valid UTF-8: byte 0xff at position 0 (a tools/list response is JSON text, which must be UTF-8)
+exit 2</pre>
 <p>The two catalogs differ in exactly one field: the <code>add</code> description. Everything
 else — the tool names, the schemas, the second tool — is identical.</p>
-<p><b>How to read the exit codes at this commit.</b> <code>0</code> — the catalog parsed and no
-keyword matched; it does not mean the server is safe. <code>1</code> — at least one signal to
-review by hand. <code>2</code> — the input was rejected: invalid JSON, the wrong structure, or a
-JSON-RPC error response.</p>
-<p><b>One gap in this version.</b> A file that is not valid UTF-8 is not rejected cleanly:
-reading it raises <code>UnicodeDecodeError</code>, the process prints a traceback and exits
-<code>1</code> — the same code as "signals found". A fix is proposed in
-<a class="u" href="https://github.com/7sh1d0w7x/mcp-tool-scanner/pull/2" target="_blank" rel="noopener">PR #2</a>,
-but it is not part of commit <code>7bc3a6e</code>; the behaviour above is what this version does.</p>
+<p><b>How to read the exit codes.</b> <code>0</code> — the catalog parsed and no keyword
+matched; it does not mean the server is safe. <code>1</code> — at least one signal to review by
+hand. <code>2</code> — the input was rejected: invalid JSON, the wrong structure, a JSON-RPC
+error response, or bytes that are not valid UTF-8.</p>
+<p><b>What changed here.</b> An earlier version of the scanner read a non-UTF-8 file,
+printed a traceback and exited <code>1</code> — the same code as "signals found", so an
+unreadable catalog looked like a suspicious one. That is fixed in this commit: the file is now
+rejected with exit <code>2</code> and a message on stderr, and nothing on stdout. The signal
+logic itself is unchanged.</p>
 <p><b>Reproduce it.</b> Everything above was run locally on this commit — no server, no agent,
 no network access:</p>
 <pre>git clone https://github.com/7sh1d0w7x/mcp-tool-scanner
 cd mcp-tool-scanner
-git checkout 7bc3a6eab9c5ed49a63510229478809e63693808
+git checkout 6b9f491e2cc6abed89ca5a97528f48c63bbebc8e
 
 python3 scan_tools.py examples/tools-clean.json;    echo "exit $?"
 python3 scan_tools.py examples/tools-poisoned.json; echo "exit $?"
