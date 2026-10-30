@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lynis said 65. Then the reboot said 69. — 7sh1d0w7x</title>
+<meta name="description" content="My hardening score went up five points, then down one after a reboot. The drop was the only honest number in the sequence.">
+<meta property="og:site_name" content="7sh1d0w7x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lynis said 65. Then the reboot said 69. — 7sh1d0w7x">
+<meta property="og:description" content="A score that goes down after a reboot is more useful than one that only goes up.">
+<meta property="og:url" content="https://7sh1d0w7x.github.io/blog/lynis-score-went-down.html">
+<meta property="og:image" content="https://7sh1d0w7x.github.io/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lynis said 65. Then the reboot said 69. — 7sh1d0w7x">
+<meta name="twitter:description" content="A score that goes down after a reboot is more useful than one that only goes up.">
+<meta name="twitter:image" content="https://7sh1d0w7x.github.io/img/og.png">
+<meta name="theme-color" content="#0a0c0b">
+<link rel="canonical" href="https://7sh1d0w7x.github.io/blog/lynis-score-went-down.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="/" aria-label="7sh1d0w7x">7sh1d0w<img src="/img/logo-mark-header.png" alt="7x" width="32" height="20"></a>
+  <nav>
+    <a href="/#services">/services</a>
+    <a href="/work.html">/work</a>
+    <a href="/linux-doctor.html">/linux-doctor</a>
+    <a href="/blog/">/blog</a>
+    <a href="/#faq">/faq</a>
+    <a href="/#contact">/contact</a>
+  </nav>
+</div></header>
+<main><div class="wrap" style="padding:56px 0 80px">
+<div class="post">
+<p style="margin-bottom:18px"><a href="/blog/" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">← /blog</a></p>
+
+<h1>Lynis said 65. Then the reboot said 69.</h1>
+<div class="meta">2026-10-30 · Linux hardening · 6 min read</div>
+
+<p>I ran a hardening pass on a lab VM and watched the score go <b>65 → 70 → 69 → 72 → 74</b>.</p>
+
+<p>The interesting number is the <b>69</b>. That is the one where the score went <i>down</i> after I fixed things, and it is the only part of the sequence I would trust in a report.</p>
+
+<h2>The starting point</h2>
+<p>The VM was not fresh. Six earlier fixes were already applied: root login off, X11 forwarding off, an <code>AllowUsers</code> line, <code>MaxAuthTries 3</code>. Baseline:</p>
+<pre>Hardening index : 65 [#############       ]
+Tests performed : 256
+Suggestions     : 43
+Warnings        : 0</pre>
+<p>Zero warnings and forty-three suggestions is a specific kind of result: nothing is actively wrong, a lot is merely undone. That is the normal state of a server someone has been maintaining without a checklist.</p>
+
+<h2>First fix: SSH, seven settings, one refusal</h2>
+<p>Seven of the suggestions pointed at sshd. I did not copy them.</p>
+<pre>LogLevel VERBOSE            # logs the key fingerprint at login
+MaxSessions 2               # one compromised channel does not open ten
+AllowTcpForwarding no       # the box stops being a tunnel
+AllowAgentForwarding no     # your agent cannot be hijacked here
+ClientAliveInterval 300     # without this, TCPKeepAlive no
+ClientAliveCountMax 2       # leaves dead sessions hanging
+TCPKeepAlive no</pre>
+<p>The last two are a pair. Lynis suggests both, and applied alone <code>TCPKeepAlive no</code> is worse than doing nothing: with <code>ClientAliveInterval 0</code> there is nothing left to detect a dead peer, so stale sessions sit in the process table. A checklist is not a plan.</p>
+<p>The one I refused: <b>move SSH off port 22</b>. It does not reduce risk. It moves noise out of your logs and hides the same attack from yourself. It is written in the report as a decision, not skipped quietly.</p>
+<pre>65 → 70</pre>
+
+<h2>Then the reboot</h2>
+<p>Twenty-three pending updates, a kernel bump, one reboot. The score came back <b>69</b>.</p>
+<p>One new suggestion had appeared:</p>
+<pre>FIRE-4590  Configure a firewall/packet filter
+firewall_active=0   firewall_installed=0   firewall_empty_ruleset=1</pre>
+<p>Before the reboot, Lynis saw a firewall. After it, nothing. Nothing had degraded — the score simply stopped believing something that was never true. Whatever rules existed were in memory, and memory does not survive a restart.</p>
+<p><b>A score that goes down after a reboot is more useful than one that only goes up.</b> It means the tool noticed. The dangerous version of this exercise is the one where you fix ten things, never reboot, and ship a report describing a machine that will not exist tomorrow morning.</p>
+
+<h2>The evidence that is not a score</h2>
+<p>I applied a default-deny ruleset with nftables, and this time I armed the undo before applying it:</p>
+<pre>nft -c -f /etc/nftables.conf                      # syntax check, free
+systemd-run --on-active=180 --unit=nft-rollback \
+  /bin/sh -c 'nft flush ruleset; systemctl disable --now nftables'
+systemctl enable --now nftables
+# then: open a NEW ssh session, and only if it works
+systemctl stop nft-rollback.timer</pre>
+<p>Three minutes to lose SSH is three minutes you get back for free. Without that, a typo in a policy line is a console trip to a machine you may not have physical access to.</p>
+<p>Here is the part I would put in front of a client, because it needs no trust in any scanner:</p>
+<pre>from another host, against that machine:
+
+port 22   → open (8 ms)
+port 8080 → timeout after 5 s      ← DROP, not REFUSE
+port 3306 → timeout after 5 s      ← DROP, not REFUSE</pre>
+<p>A closed port on a host without a firewall answers instantly with a TCP reset: “connection refused.” Here it goes silent. That silence is the signature of <code>policy drop</code>, and it is visible from the outside. A scanner score is a number you have to believe; a dropped packet is a fact you can reproduce.</p>
+
+<h2>Where scores plateau, and why</h2>
+<p>Then the last round: banner, <code>login.defs</code> (umask, password age), four unused kernel protocols blacklisted, fail2ban. Suggestions dropped 43 → 26. The score moved 72 → 74.</p>
+<p>Most of that work removed suggestions without moving the number much, because the index is:</p>
+<pre>hardening_index = points × 100 / total_points</pre>
+<p>Every test has a fixed maximum, and tests are not weighted equally. Fixing twelve low-weight items earns less than one heavy one. So the last few points are not more work — they are <i>different</i> work: auditd, file integrity monitoring, remote logging. Those are the things I would price separately instead of bundling into a cheap audit and doing badly.</p>
+
+<h2>Two traps worth stealing</h2>
+<pre>1. sudo tee file <<'EOF'
+   sudo reads its password from stdin. Your heredoc is stdin.
+   The first line of your config becomes a password attempt,
+   tee writes nothing, and the error goes to stderr you scroll past.
+   Fix: sudo -v first, then the heredoc.
+
+2. systemctl restart fail2ban &amp;&amp; fail2ban-client status sshd
+   Too fast. The client asks for a socket the server has not created yet.
+   “Failed to access socket” is a race, not a broken service.</pre>
+
+<h2>What I refused, and why that is the product</h2>
+<p>Eight suggestions stayed refused on purpose:</p>
+<pre>Port 22              theatre, not risk
+GRUB password        lockout risk at boot, for little gain
+/home /var separate  a reinstall, not an audit finding
+SHA_CRYPT rounds     outdated: this system uses YESCRYPT
+USB storage off      irrelevant on a VM, a policy call on a laptop
+malware scanner      poor cost/benefit on a server, offer it separately
+auditd, AIDE         the next level, priced separately
+remote logging       needs a second host to mean anything</pre>
+<p>Anyone can run a scanner and paste its output. What a client is paying for is the paragraph next to each finding that says <i>do this, skip that, and here is the reason</i>. The refusals are where the judgement shows — and they are also where a report stops being copy-pasteable from a blog post.</p>
+
+<h2>The takeaway</h2>
+<p>If you are going to run a hardening benchmark, run it three times: before, after, and after a reboot. The third run is the only one describing the machine you will actually have. And keep the raw output of all three — not because the score matters, but because the diff is the only claim you can defend six months later when someone asks what changed.</p>
+
+<div class="cta"><p><b>Want your server checked?</b> I run a read-only <a href="/">Linux Security Snapshot</a> — what's actually enforced, what's only written in a file, and a before/after you can keep. No access to your data required.</p></div>
+
+</div>
+</div></main>
+<footer><div class="wrap foot">
+  <span>© <span id="y"></span> 7sh1d0w7x <span class="pron">· read “seven-shadow-sevenx”</span> — secure self-hosted &amp; AI/MCP security</span>
+  <span><a class="u" href="https://github.com/7sh1d0w7x" target="_blank" rel="noopener">github</a> · timisoara, ro · remote</span>
+</div></footer>
+<script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>
