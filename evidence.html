@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What an evidence pack looks like — 7sh1d0w7x</title>
-<meta name="description" content="The exact artifact a hardening audit produces: 11 read-only checks, before/after, SHA256 sums, and a diff you can re-run yourself.">
+<meta name="description" content="A hardening assessment hands you a short report and the raw evidence behind it: 11 read-only checks on one lab VM, before and after, with checksums.">
 <meta property="og:site_name" content="7sh1d0w7x">
 <meta property="og:type" content="article">
 <meta property="og:title" content="What an evidence pack looks like — 7sh1d0w7x">
-<meta property="og:description" content="11 read-only checks, before/after, SHA256 sums, and a diff you can re-run yourself.">
+<meta property="og:description" content="A short report plus the raw evidence behind it — 11 read-only checks, before and after, on one lab VM.">
 <meta property="og:url" content="https://7sh1d0w7x.github.io/evidence.html">
 <meta property="og:image" content="https://7sh1d0w7x.github.io/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="What an evidence pack looks like — 7sh1d0w7x">
-<meta name="twitter:description" content="The exact artifact a hardening audit produces — not a screenshot of a scanner.">
+<meta name="twitter:description" content="A short report plus the raw evidence behind it, on one lab VM.">
 <meta name="twitter:image" content="https://7sh1d0w7x.github.io/img/og.png">
 <meta name="theme-color" content="#0a0c0b">
 <link rel="canonical" href="https://7sh1d0w7x.github.io/evidence.html">
@@ -44,18 +44,28 @@
 <p style="margin-bottom:18px"><a href="/work.html" style="font-family:'JetBrains Mono',monospace;font-size:12.5px">← /work</a></p>
 
 <h1>What an evidence pack looks like</h1>
-<div class="meta">2026-10-30 · artifact example · a lab VM, published in full</div>
+<div class="meta">2026-10-30 · artifact example · one disposable lab VM</div>
 
-<p>Most hardening reports are a PDF with a scanner screenshot. This is what I hand over instead: a directory of raw, re-runnable output, before and after, with hashes.</p>
+<h2>The question</h2>
+<p>A server hardening assessment answers one question, in plain terms: <b>is this machine actually set up the way everyone assumes it is?</b></p>
+<p>Not “is it secure” — nobody can answer that from a scan. The narrower question is answerable: which logins are allowed, what is listening, who can become root, which rules are actually loaded, how far behind the box is on updates. Each of those has a yes/no answer you can verify.</p>
 
-<p>Every number on this page comes from a real lab VM (Ubuntu 26.04, KVM) that I hardened on October 30, 2026. The pack below is the actual artifact — nothing retyped.</p>
+<h2>What you receive</h2>
+<pre>1. a short written report  ... what was found, what matters first, what to do
+2. the raw evidence ....... the command output behind every line of that report
+3. before and after ....... the same checks run twice, plus the difference
+4. a checksum manifest .... so the files can be compared later</pre>
+<p>The report is what you read. The evidence is what makes the report checkable instead of trusted — you, or anyone you hire later, can re-run the same checks and compare.</p>
+<p><b>What you actually get depends on the job.</b> An assessment-only engagement produces the report and the raw evidence. The before/after pair only exists where changes were agreed in writing and made; a single pack is what an assessment produces.</p>
+<p style="margin:22px 0 26px"><b><a href="/blog/hardening-report-example.html" style="font-size:16px">View sample report →</a></b><br>
+<span style="color:var(--mut);font-size:13px">A full written example, from the same lab work.</span></p>
 
-<h2>The 11 checks</h2>
-<p>All read-only. Nothing on your host is modified, no packages are installed, and the whole run takes about ten seconds.</p>
+<h2>The 11 checks, and what they are not</h2>
+<p>All read-only. Nothing on the host is modified and no packages are installed. On a small VM the whole run takes about ten seconds.</p>
 <pre>01  host identity ......... hostname, kernel, OS, uptime
 02  sshd effective ........ permitrootlogin, passwordauth, maxauthtries, x11, allowusers
-03  sshd drop-ins ......... every file in /etc/ssh/sshd_config.d
-04  listening sockets ..... what the box actually exposes (ss -tulpn)
+03  sshd drop-ins ......... the files in /etc/ssh/sshd_config.d
+04  listening sockets ..... what the box has open, as seen from the box
 05  kernel sysctl ......... rp_filter, kptr_restrict, syncookies, ptrace_scope
 06  firewall policy ....... nft / ufw / firewalld, or the absence of all three
 07  sudo access ........... what each privileged user may run
@@ -63,8 +73,10 @@
 09  SUID binaries ......... the setuid surface
 10  cron .................. root crontab and /etc/cron.d
 11  pending updates ....... how far behind the box is</pre>
+<p><b>This is a limited assessment, not an exhaustive audit.</b> It covers configuration surface, not application logic, not code review, not network scanning, and not whether a specific CVE affects you. Eleven checks are chosen because they answer the questions above cheaply and reproducibly — not because they are everything.</p>
 
-<h2>Before / after, same host, four hours apart</h2>
+<h2>One host, before and after</h2>
+<p>The example below is a throwaway lab VM (Ubuntu 26.04, KVM), not a client. Both packs come from the same day: <code>17:37</code> and <code>22:33</code>, about five hours apart.</p>
 <pre>Check                        before                after
 ─────────────────────────────────────────────────────────────
 permitrootlogin              no                    no
@@ -77,10 +89,10 @@ firewall policy              niciun ruleset   →    drop
 uid 0 accounts               root                  root
 SUID binaries                15                    15
 pending updates              23                →    0</pre>
-<p>Four rows changed out of ten. If a report shows every row improved, you are reading marketing — most settings were already correct, and saying so is part of the job.</p>
+<p>Two rows changed out of ten. The other eight were already correct before the work started, and the pack shows that rather than hiding it — a before/after table where everything improved would mean the “before” was chosen for effect.</p>
 
-<h2>The diff, which is the actual deliverable</h2>
-<p>Generated by comparing the two packs. Noise (uptime, timestamps, PIDs) is filtered out, so what remains is the change:</p>
+<h2>The diff</h2>
+<p>Generated by comparing the two packs. Timestamps, uptime and process IDs are filtered out, so what remains is the change. Excerpt, with tabs re-indented for width:</p>
 <pre>── 02-sshd-effective.txt
   − clientaliveinterval 0
   + clientaliveinterval 300
@@ -97,6 +109,7 @@ pending updates              23                →    0</pre>
   +         tcp dport 22 accept
   +         ip protocol icmp accept
   +         ip6 nexthdr ipv6-icmp accept
+  +         counter packets 10 bytes 600 drop
   +     }
   +     chain forward { policy drop; }
   +     chain output  { policy accept; }
@@ -106,28 +119,42 @@ pending updates              23                →    0</pre>
   − 23
   + 0</pre>
 
-<h2>Integrity: the pack proves it was not edited</h2>
-<p>Every file is hashed at collection time. Anyone can re-run the check and see whether the artifact was tampered with:</p>
+<h2>Checksums: what they do and do not prove</h2>
+<p>Every file is hashed when the pack is created, and the hashes are listed in <code>SHA256SUMS</code> (14 entries — the manifest does not hash itself).</p>
 <pre>$ sha256sum -c SHA256SUMS
 00-meta.txt: OK
 01-host.txt: OK
 02-sshd-effective.txt: OK
 ...
-15 files, all OK</pre>
+transcript.txt: OK</pre>
+<p>What that gives you: if a file changes and the manifest does not, the mismatch shows up — accidental edits and careless repackaging get caught. What it does not give you: <b>proof of origin, of when it was collected, or that the commands were run as described.</b> Someone who alters a whole pack can recompute every hash in it. The manifest makes silent single-file edits visible; it is not a signature and it is not a timestamp.</p>
 
-<h2>What is not in the pack</h2>
-<pre>✗ private keys, hashes, passwords or tokens
-✗ file contents from your home directory
+<h2>What is not collected</h2>
+<pre>✗ private keys, password hashes, tokens or credentials
+✗ file contents from your home directory or application data
 ✗ packet captures or traffic logs
-✗ anything that requires write access</pre>
-<p>That is deliberate. The pack answers “what is enforced, what is listening, who is privileged, what is missing” — it does not need your data to do it.</p>
+✗ anything that needs write access to the host</pre>
+<p>This example is a scratch VM: its hostname (<code>lab</code>), its user and its loopback addresses are not anyone's server. I checked the archive for credentials and external addresses before publishing it — the only addresses in it are <code>127.x</code> and wildcard binds. That check is not a guarantee for any other host; it is what was verified for this file.</p>
 
-<h2>Download the real thing</h2>
-<p>The mid-hardening pack from that lab VM, unedited (15 files, ~60 KB). Open it, read it, and decide for yourself whether it is worth €290:</p>
-<p><a href="/evidence/ulab-after.zip" download><b>ulab-after.zip</b></a> — collected 2026-10-30, SHA256SUMS included</p>
-<p style="color:var(--mut);font-size:13px">Lab values in it (hostname <code>lab</code>, user <code>lab</code>, private addresses) belong to a throwaway VM, not to a client.</p>
+<h2>Limits of this example</h2>
+<pre>· the state shown is the end of one hardening session, not a fully
+  hardened production baseline — deferred items stayed deferred
+· sshd -T reports the configuration the daemon evaluates; it is not
+  on its own proof that the running process was reloaded
+· ss -tulpn lists sockets bound on the host; it does not prove what is
+  reachable from the internet (that needs a scan from outside)
+· listing the drop-in files does not show their contents
+· 11 checks are a limited assessment, not an exhaustive audit
+· only the after pack is published: the before pack exists but is not
+  downloadable, so the diff above cannot be re-derived from this page
+· one VM, one distribution, one day</pre>
 
-<div class="cta"><p><b>Want this on your server?</b> I run a read-only <a href="/">Linux Security Snapshot</a>: the same 11 checks, before and after, plus the part that does not fit in a pack — what I refused to change, and why.</p></div>
+<h2>Raw files, if you want to verify rather than read</h2>
+<p>Optional: the unedited output behind the tables above, for technical review.</p>
+<p><a href="/evidence/ulab-after.zip" download="linux-hardening-lab-evidence.zip"><b>Download lab evidence sample — ZIP, 7.2 KiB</b></a><br>
+<span style="color:var(--mut);font-size:13px">15 files, 8,129 bytes (7.9 KiB) extracted, collected 2026-10-30 from a disposable lab VM. Optional raw outputs for technical review.</span></p>
+
+<div class="cta"><p><b>Want this on your server?</b> The <a href="/">Server Health Check</a> is assessment only: a prioritized report with the evidence behind it, no changes made to your system.</p></div>
 
 </div>
 </div></main>
