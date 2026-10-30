@@ -59,7 +59,8 @@
 <h2>What the host actually does</h2>
 <pre>$ sshd -T | grep -i '^passwordauthentication'
 passwordauthentication yes</pre>
-<p>Enabled. But <code>sshd -T</code> does not tell you <i>why</i> — whether that is the default, or something set it. So: which file decided?</p>
+<p>Enabled. Two caveats before going further. First, <code>sshd -T</code> does not tell you <i>why</i> — whether that is the default or something set it, so the next question is which file decided.</p>
+<p>Second, and more important: <code>sshd -T</code> parses the configuration and prints what the daemon <i>would</i> apply. It does not read the memory of the running process. If someone edited a file after the last reload, <code>sshd -T</code> shows the new value while the daemon still enforces the old one. The two are usually the same; they are not the same statement. The way to close that gap is a fresh connection whose behavior you observe, or a reload followed by the same check.</p>
 
 <h2>Where it comes from</h2>
 <pre>/etc/ssh/sshd_config
@@ -87,19 +88,25 @@ passwordauthentication yes</pre>
 <h2>Why this matters more than it sounds</h2>
 <p>Because it turns a sentence you have probably said into one you cannot support:</p>
 <p><b>“I read the config.”</b> Which config? The file you opened, or the configuration the daemon resolved — which is that file plus every file it includes, recursively, plus whatever the distro generates into it?</p>
-<p>And it is worse on an immutable host. On Fedora Atomic, Bazzite or a <code>bootc</code> image, the effective file is a three-way merge of <code>/usr/etc</code> → <code>/etc</code>, so the file you are reading may not even be the one that wins. The old advice — “check the config file” — quietly stopped being true.</p>
+<p>And it is worse on an immutable host. On Fedora Atomic, Bazzite or a <code>bootc</code> image, <code>/usr</code> is the signed image and <code>/etc</code> is a persistent layer on top of it: across upgrades, bootc performs a three-way merge — the new image's <code>/etc</code> as the base, the diff between the current and previous <code>/etc</code> applied onto it, and files you modified kept over the image default (which is exposed read-only as <code>/usr/etc</code>). Enable <code>[etc] transient = true</code> and <code>/etc</code> is not persisted at all, so the image's copy wins outright.</p>
+<p>Either way the conclusion holds: the file in <code>/etc</code> is a layer, not the truth. The old advice — “check the config file” — quietly stopped being true, and <code>ostree admin config-diff</code> is the command that shows what actually diverged.</p>
 
 <h2>What to do instead</h2>
 <p>Ask the two questions separately, and never accept an answer to only one of them:</p>
-<pre>1. what is ENFORCED right now?      sshd -T · sysctl -n · nft list ruleset
-                                    systemctl show · /proc · live sockets
+<pre>1. what does it EVALUATE to?        sshd -T · sysctl -n · nft list ruleset
+                                    (that is the next start/reload, not
+                                     the running process — close the gap
+                                     with a fresh connection or a reload)
 2. which file and line SET it?      follow the includes, recursively,
                                     and say when the answer is "the default"</pre>
-<p>That is the entire idea behind <a href="https://github.com/7sh1d0w7x/state-witness" target="_blank" rel="noopener">state-witness</a>, the tool I have been building: read the resolved runtime state, and report the provenance — including when the honest answer is <i>“nobody set this, it is the compiled default”</i>.</p>
+<p>That is the idea behind <a href="https://github.com/7sh1d0w7x/state-witness" target="_blank" rel="noopener">state-witness</a>, the tool I have been building. Being precise about what it delivers today: it reports the <b>effective</b> value (read through <code>sshd -T</code>, <code>sysctl -n</code>, the live filter) together with the <i>mechanism</i> it was read from, and it says “skip, and here is why” when a check cannot run. It does not yet attribute a value to a specific file and line — the config-file hunt is still something a human does, with the includes in front of them.</p>
+<p>That distinction is the difference between a tool that sounds clever and one you can trust: attribute what you actually read, and name what you have not implemented.</p>
 
 <h2>The takeaway</h2>
 <p>A finding without provenance is a claim. A finding with provenance is evidence — you can re-run it, and it either reproduces or it doesn't. “Password authentication is enabled” is a claim. “Password authentication is enabled, and here is the chain that resolves to that” is something you can check.</p>
 <p>Four files to answer one question is not a flaw in the host. It is how Linux configuration has always worked. The flaw is pretending otherwise.</p>
+
+<p style="color:var(--mut);font-size:12.5px">Sources: <code>sshd_config(5)</code> and <code>sshd(8)</code> for <code>-T</code>; <a href="https://bootc.dev/bootc/bootc-filesystem.7.html" target="_blank" rel="noopener">bootc — Filesystem</a> for the <code>/etc</code> three-way merge and <code>etc.transient</code>.</p>
 
 <div class="cta"><p><b>Want your server checked?</b> I run a read-only <a href="/">Linux Security Snapshot</a> — what's exposed, severity, top 3 fixes. If I find nothing, you don't pay.</p></div>
 

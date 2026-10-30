@@ -55,19 +55,19 @@
 Tests performed : 256
 Suggestions     : 43
 Warnings        : 0</pre>
-<p>Zero warnings and forty-three suggestions is a specific kind of result: nothing is actively wrong, a lot is merely undone. That is the normal state of a server someone has been maintaining without a checklist.</p>
+<p>Zero warnings and forty-three suggestions says one thing precisely: <b>none of Lynis's high-severity tests failed</b>. It is not a clean bill of health — warnings are the tool's own severity classification, and a check that could not run returns “skipped”, not “warning”. I treat the absence of warnings as “nothing the scanner rates as urgent”, not as “nothing is wrong”.</p>
 
 <h2>First fix: SSH, seven settings, one refusal</h2>
 <p>Seven of the suggestions pointed at sshd. I did not copy them.</p>
 <pre>LogLevel VERBOSE            # logs the key fingerprint at login
-MaxSessions 2               # one compromised channel does not open ten
+MaxSessions 2               # max 2 sessions per TCP connection, not 10
 AllowTcpForwarding no       # the box stops being a tunnel
 AllowAgentForwarding no     # your agent cannot be hijacked here
 ClientAliveInterval 300     # without this, TCPKeepAlive no
 ClientAliveCountMax 2       # leaves dead sessions hanging
 TCPKeepAlive no</pre>
-<p>The last two are a pair. Lynis suggests both, and applied alone <code>TCPKeepAlive no</code> is worse than doing nothing: with <code>ClientAliveInterval 0</code> there is nothing left to detect a dead peer, so stale sessions sit in the process table. A checklist is not a plan.</p>
-<p>The one I refused: <b>move SSH off port 22</b>. It does not reduce risk. It moves noise out of your logs and hides the same attack from yourself. It is written in the report as a decision, not skipped quietly.</p>
+<p>The last two are a pair. Lynis suggests both, but applied on their own — with the shipped default <code>ClientAliveInterval 0</code> — they disable the only mechanism that notices a dead peer: <code>sshd_config(5)</code> says it plainly, “if TCP keepalives are not sent, sessions may hang indefinitely”. Setting the interval first, then turning TCP keepalive off, keeps the detection without the TCP-level probing. A checklist is not a plan.</p>
+<p>The one I refused: <b>move SSH off port 22</b>. It does not reduce the risk of someone who is actually targeting you — a port scan finds the service in seconds. What it does buy is a quieter log and less background noise from automated scanners; what it costs is that the same noise disappears from your own logs too. That is a policy trade-off, not a hardening result, so the report states it as a decision instead of quietly skipping it.</p>
 <pre>65 → 70</pre>
 
 <h2>Then the reboot</h2>
@@ -75,34 +75,36 @@ TCPKeepAlive no</pre>
 <p>One new suggestion had appeared:</p>
 <pre>FIRE-4590  Configure a firewall/packet filter
 firewall_active=0   firewall_installed=0   firewall_empty_ruleset=1</pre>
-<p>Before the reboot, Lynis saw a firewall. After it, nothing. Nothing had degraded — the score simply stopped believing something that was never true. Whatever rules existed were in memory, and memory does not survive a restart.</p>
+<p>Before the reboot Lynis listed a firewall among the detected components; after it, the check that runs the packet filter reported none. I can show the observation, not the cause: my own evidence pack, taken before the reboot, already recorded <code>nftables</code> as <code>disabled</code> with an empty ruleset. So the most likely reading is that Lynis changed its mind once it looked at the live filter instead of at installed software — and that nothing was ever persisted, which is the part I can demonstrate. “The rules were in memory” is a plausible explanation, not a measured one, and I am not going to dress it up as one.</p>
 <p><b>A score that goes down after a reboot is more useful than one that only goes up.</b> It means the tool noticed. The dangerous version of this exercise is the one where you fix ten things, never reboot, and ship a report describing a machine that will not exist tomorrow morning.</p>
 
 <h2>The evidence that is not a score</h2>
-<p>I applied a default-deny ruleset with nftables, and this time I armed the undo before applying it:</p>
-<pre>nft -c -f /etc/nftables.conf                      # syntax check, free
-systemd-run --on-active=180 --unit=nft-rollback \
-  /bin/sh -c 'nft flush ruleset; systemctl disable --now nftables'
-systemctl enable --now nftables
-# then: open a NEW ssh session, and only if it works
-systemctl stop nft-rollback.timer</pre>
-<p>Three minutes to lose SSH is three minutes you get back for free. Without that, a typo in a policy line is a console trip to a machine you may not have physical access to.</p>
+<p>I applied a default-deny ruleset with nftables, with a timed undo armed first. One correction to how this is usually written down: <b>flushing the ruleset is not a rollback</b>. It does not restore the previous state — it drops you to “no ruleset at all”, which is a different configuration. The honest version saves the previous state and restores exactly that:</p>
+<pre>nft list ruleset > /root/nft-before.nft        # 1. save what is live now
+nft -c -f /etc/nftables.conf                   # 2. syntax check, free
+systemd-run --on-active=180 --unit=nft-undo \
+  /bin/sh -c 'nft -f /root/nft-before.nft'     # 3. timed restore, not flush
+systemctl enable --now nftables                # 4. apply
+# 5. open a NEW ssh session — not the one you already have
+systemctl stop nft-undo.timer                  # 6. only if step 5 works</pre>
+<p>Limits of even that: the restore file is a snapshot of the live ruleset, not of the service state — if the host had no nftables service enabled before, restoring the rules leaves you with rules that vanish at the next reboot. Save that too (<code>systemctl is-enabled nftables</code>) and put it back. And if the box is unreachable, none of this helps: you need console access, and that is worth knowing <i>before</i> the window, not during it.</p>
 <p>Here is the part I would put in front of a client, because it needs no trust in any scanner:</p>
 <pre>from another host, against that machine:
 
 port 22   → open (8 ms)
 port 8080 → timeout after 5 s      ← DROP, not REFUSE
 port 3306 → timeout after 5 s      ← DROP, not REFUSE</pre>
-<p>A closed port on a host without a firewall answers instantly with a TCP reset: “connection refused.” Here it goes silent. That silence is the signature of <code>policy drop</code>, and it is visible from the outside. A scanner score is a number you have to believe; a dropped packet is a fact you can reproduce.</p>
+<p>A closed port on a host without a firewall answers instantly with a TCP reset: “connection refused.” Here it goes silent — consistent with <code>policy drop</code>. It is not proof on its own: a timeout also happens when a host is down, a route is blackholed, or something upstream swallows the packet. What makes it evidence is the pair of observations — <b>refused before, silent after, with the drop rule visible on the host</b>. That is why the pack keeps both sides instead of one screenshot.</p>
 
 <h2>Where scores plateau, and why</h2>
 <p>Then the last round: banner, <code>login.defs</code> (umask, password age), four unused kernel protocols blacklisted, fail2ban. Suggestions dropped 43 → 26. The score moved 72 → 74.</p>
 <p>Most of that work removed suggestions without moving the number much, because the index is:</p>
 <pre>hardening_index = points × 100 / total_points</pre>
+<p>Useful up to a point: it is a weighted checklist normalised to 100, comparable over time on <i>one</i> host. It is not a risk score, and comparing two different machines by index is meaningless — they are not even measured against the same tests.</p>
 <p>Every test has a fixed maximum, and tests are not weighted equally. Fixing twelve low-weight items earns less than one heavy one. So the last few points are not more work — they are <i>different</i> work: auditd, file integrity monitoring, remote logging. Those are the things I would price separately instead of bundling into a cheap audit and doing badly.</p>
 
 <h2>Two traps worth stealing</h2>
-<pre>1. sudo tee file <<'EOF'
+<pre>1. sudo tee file &lt;&lt;'EOF'
    sudo reads its password from stdin. Your heredoc is stdin.
    The first line of your config becomes a password attempt,
    tee writes nothing, and the error goes to stderr you scroll past.
@@ -126,6 +128,8 @@ remote logging       needs a second host to mean anything</pre>
 
 <h2>The takeaway</h2>
 <p>If you are going to run a hardening benchmark, run it three times: before, after, and after a reboot. The third run is the only one describing the machine you will actually have. And keep the raw output of all three — not because the score matters, but because the diff is the only claim you can defend six months later when someone asks what changed.</p>
+
+<p style="color:var(--mut);font-size:12.5px">Sources: <code>sshd_config(5)</code> for <code>ClientAliveInterval</code>, <code>TCPKeepAlive</code>, <code>MaxSessions</code>; Lynis at <a href="https://cisofy.com/lynis/" target="_blank" rel="noopener">cisofy.com/lynis</a> (the index formula is in <code>include/report</code>); nftables wiki for <code>flush ruleset</code> semantics.</p>
 
 <div class="cta"><p><b>Want your server checked?</b> I run a read-only <a href="/">Linux Security Snapshot</a> — what's actually enforced, what's only written in a file, and a before/after you can keep. No access to your data required.</p></div>
 
