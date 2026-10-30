@@ -59,7 +59,8 @@ Offending ECDSA key in /home/user/.ssh/known_hosts:12
 Host key for [127.0.0.1]:2222 has changed and you have requested strict checking.
 Host key verification failed.</pre>
 
-<p>One detail in that message looks like a contradiction: it names an <b>ED25519</b> fingerprint, then an <b>ECDSA</b> entry in <code>known_hosts</code>. It is not a contradiction — the stored entry was ECDSA, the server now offers ED25519. Same host and port, different key: that is exactly the change the check is reporting.</p>
+<p>One detail in that message looks like a contradiction: it names an <b>ED25519</b> fingerprint, then an <b>ECDSA</b> entry in <code>known_hosts</code>. It is not a contradiction — the stored entry was ECDSA, the negotiation landed on ED25519, and <code>known_hosts</code> had nothing of that type for this host.</p>
+<p>That distinction matters more than it looks. “A key of a different type appeared” is not the same event as “the identity changed”: a server can keep its ECDSA key and add an ED25519 one, or a client can reorder its preferences after an upgrade. To find out which happened, ask for the old type explicitly — <code>ssh -o HostKeyAlgorithms=ecdsa-sha2-nistp256</code> — and see whether the stored key still matches. If it does, nothing was replaced; you are looking at a key type your <code>known_hosts</code> had never seen.</p>
 
 <p>The honest reaction is to press <code>yes</code> and move on. That is also how people get owned. This post is the ten minutes I spent instead, and the rule I came out with.</p>
 
@@ -90,6 +91,8 @@ ssh-keygen -R "[127.0.0.1]:2222"     # removes it</pre>
 
 <p>The brackets are not decoration. They tell the client "this is host and port, not a hostname". If you have ever "fixed" the warning and had it come back, this is why.</p>
 
+<p><b>Order matters, and this is where people get hurt.</b> Removing the entry does not verify anything — it deletes the only record you had of what the server used to be. If you run <code>ssh-keygen -R</code> first and then accept whatever appears, you have replaced a check with a shrug. Get the new fingerprint from a source you trust <i>first</i> (console, provider panel, a person on another channel), and only then remove the stale line and compare what you were given with what you see.</p>
+
 <h2>Two situations, one question</h2>
 
 <p>A changed key has two possible explanations, and they are not equally common. Everything else — a reinstall, a migration, an ephemeral container — is a variant of the first:</p>
@@ -107,7 +110,7 @@ hostile ........ someone is between you and the server, presenting their key</pr
 
 <h2>What I did</h2>
 
-<p>I had recreated the container two minutes earlier, so I knew the key would differ. That is the only reason the next step was safe:</p>
+<p>I had recreated the container two minutes earlier, so I knew the key would differ. I also had the fingerprint the setup script had printed — read from the build output, not from the connection that was warning me. With both in hand, removing the stale entry was safe:</p>
 
 <pre class="wrap">ssh-keygen -R "[127.0.0.1]:2222"</pre>
 
@@ -135,13 +138,15 @@ hostile ........ someone is between you and the server, presenting their key</pr
 
 <p>What it does is turn off exactly the check that just protected you. The warning disappears, and so does the only signal that would tell you something is wrong.</p>
 
-<p>If you need something for automation, <code>accept-new</code> is the narrower option: it adds host keys it has never seen, but still refuses a host whose key has changed. That is the part you actually want to keep.</p>
+<p>If you need something for automation, <code>accept-new</code> is the narrower option: it adds host keys it has never seen, but still refuses a host whose key has changed. That is the part you actually want to keep — with the caveat that it is still trust-on-first-use: the <i>first</i> connection to a new host is accepted blind, so an attacker who gets there first is trusted. Ship the expected key out of band (configuration management, a known_hosts file baked into the image) if the first connection matters.</p>
 
 <h2>The rule</h2>
 
 <p>A changed host key is not an error to suppress. It is a question: <b>do I know why this changed, and can I verify the new value somewhere else?</b></p>
 
 <p>Two yeses — accept, and move on. Anything else — stop. The wall of <code>@@@</code> is not the tool being dramatic. It is the tool doing its one job.</p>
+
+<p style="color:var(--mut);font-size:12.5px">Sources: <code>ssh_config(5)</code> and <code>sshd_config(5)</code> for <code>StrictHostKeyChecking</code>, <code>HostKeyAlgorithms</code> and the <code>[host]:port</code> form; <code>ssh-keygen(1)</code> for <code>-R</code>.</p>
 
 <div class="cta"><p><b>Want your server checked?</b> I run a read-only <a href="/">hardening audit</a> — what's exposed, what it actually enforces, and the evidence behind each finding. If there is nothing worth fixing, you don't pay.</p></div>
 

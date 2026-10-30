@@ -62,16 +62,34 @@
 <li><b>SSRF via discovery.</b> A malicious server puts <code>http://169.254.169.254/</code> (cloud metadata) in its metadata; the client fetches it and leaks credentials.</li>
 </ul>
 
+<h2>Four different questions, not one</h2>
+<p>Most “is my MCP server exposed?” checks collapse four separate things into one guess. Keep them apart, because each has a different fix:</p>
+<pre>1. BINDING ....... which address is the socket on? (127.0.0.1 or 0.0.0.0)
+2. REACHABILITY .. can someone actually reach it? (firewall, NAT, port forward)
+3. AUTHENTICATION who are you? (401 without a token, or nothing at all)
+4. AUTHORIZATION . what may you do? (scopes per tool, audience-bound tokens)</pre>
+<p>A socket on <code>0.0.0.0</code> behind a default-deny firewall is not reachable. A reachable endpoint that answers <code>401</code> to everything is not the same as one that answers <code>200</code>. And an authenticated caller with a token meant for another service is the fourth problem entirely.</p>
+
 <h2>Check it in 5 minutes</h2>
-<pre># is the server reachable from outside?
-ss -tlnp | grep -E '11434|3000|8000'
+<pre># 1. binding: what is listening, and on which address
+ss -tlnp | grep -Ei 'node|python|uvicorn|bun|deno'
 
-# does it require auth at all?
-curl -s http://127.0.0.1:PORT/ | head
+# 2. reachability: from a DIFFERENT host, not from the box
+nc -vz YOUR_HOST 3000        # timeout = dropped, refused = nothing listening
 
-# what tools does it expose, and what can they reach?
-# -> list read tools vs write tools; if they share one credential, that's your blast radius</pre>
-<p>If the port is on <code>0.0.0.0</code> instead of <code>127.0.0.1</code>, stop there — that's CVE-level exposure (MCPJam, CVSS 9.8, was exactly this).</p>
+# 3+4. auth: speak the protocol, not HTTP GET on /
+curl -si -X POST http://127.0.0.1:PORT/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize",
+       "params":{"protocolVersion":"2025-06-18","capabilities":{},
+                 "clientInfo":{"name":"check","version":"0"}}}'</pre>
+<p>A <code>GET /</code> proves nothing: many servers answer <code>404</code> or <code>405</code> there while the MCP endpoint is wide open at <code>/mcp</code>. The request above is the first message of the protocol. If the reply is <code>401 Unauthorized</code> with a <code>WWW-Authenticate</code> header, the server is doing what the spec describes for HTTP transports. If it returns a JSON-RPC <code>result</code> with the server's capabilities, <b>you just talked to it without credentials</b> — that is the finding, whatever the port.</p>
+<p>The port numbers in ready-made checklists are usually someone else's defaults. <code>11434</code> is Ollama's; MCP servers inherit whatever the framework picks (3000, 8000, 8080, 6274…). Enumerate sockets, don't guess ports.</p>
+
+<h2>When binding really is the whole story</h2>
+<p>CVE-2026-23744 is the example worth knowing, because it shows how the four questions collapse into something serious. MCPJam Inspector (npm <code>@mcpjam/inspector</code> ≤ 1.4.2) bound its control API to <code>0.0.0.0</code> <i>and</i> exposed <code>/api/mcp/connect</code> with no authentication; that endpoint took a <code>command</code> field and executed it. Binding made it reachable, missing authentication made it exploitable, and the result was unauthenticated remote code execution — CVSS 9.8, fixed in 1.4.3.</p>
+<p>Notice what the CVE is <i>not</i>: it is not “<code>0.0.0.0</code> means CVSS 9.8”. Binding alone is a precondition. The vulnerability was an unauthenticated endpoint that ran commands.</p>
 
 <h2>The fix (in order)</h2>
 <ul>
@@ -81,6 +99,8 @@ curl -s http://127.0.0.1:PORT/ | head
 <li><b>Audit centrally.</b> Every tool call as a structured record, with a <code>trigger_source</code> so you can answer "which calls were influenced by document X?".</li>
 <li><b>Pin and review what the agent loads.</b> Diff the tool catalog like a dependency.</li>
 </ul>
+
+<p style="color:var(--mut);font-size:12.5px">Sources: <a href="https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization" target="_blank" rel="noopener">MCP specification — Authorization</a> (401 + <code>WWW-Authenticate</code>, bearer tokens, audience binding), <a href="https://github.com/advisories/GHSA-232v-j27c-5pp6" target="_blank" rel="noopener">GHSA-232v-j27c-5pp6 / CVE-2026-23744</a>.</p>
 
 <div class="cta"><p><b>Want this checked properly?</b> I run an <a href="/">MCP / Agent Security Review</a> — what's exposed, blast radius, top 3 fixes. Fixed price, written report, async.</p></div>
 

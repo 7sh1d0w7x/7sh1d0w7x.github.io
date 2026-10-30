@@ -52,18 +52,18 @@
 
 <h2>Network &amp; access</h2>
 <ul>
-<li><b>1. SSH: keys only.</b> <code>PasswordAuthentication no</code>, root login off. Watch out: cloud-init drop-ins can silently override this — name yours <code>00-hardening.conf</code> so it wins.</li>
-<li><b>2. Firewall: default deny.</b> Open 22/80/443 only. <code>ufw default deny incoming</code>.</li>
+<li><b>1. SSH: keys only.</b> <code>PasswordAuthentication no</code>, root login off. Watch out: cloud-init drop-ins can silently override this. OpenSSH keeps the <b>first</b> value it reads, and drop-ins are read in filename order — so yours must sort <i>before</i> <code>50-cloud-init.conf</code>, e.g. <code>00-hardening.conf</code>. Verify with <code>sshd -T</code>, not by reading the file you edited.</li>
+<li><b>2. Firewall: default deny.</b> Allow only what actually serves traffic — 22 and 443 on a typical setup, 80 only if you need the ACME challenge or a redirect. <code>ufw default deny incoming</code>.</li>
 <li><b>3. fail2ban</b> on SSH (and the n8n login if exposed).</li>
-<li><b>4. n8n never on 0.0.0.0.</b> Bind it to localhost and put a reverse proxy in front.</li>
+<li><b>4. n8n never on a public interface.</b> Its listen address defaults to <code>::</code> (all interfaces), so this is an explicit setting: <code>N8N_LISTEN_ADDRESS=127.0.0.1</code>, with a reverse proxy in front. In Docker, also publish on loopback: <code>-p 127.0.0.1:5678:5678</code> — <code>-p 5678:5678</code> publishes on every interface.</li>
 </ul>
 
 <h2>The app</h2>
 <ul>
 <li><b>5. HTTPS via Caddy.</b> Auto-TLS, HSTS. No plain HTTP.</li>
-<li><b>6. Postgres on localhost only</b>, strong password, not the default.</li>
-<li><b>7. Secrets in env, not in workflows.</b> Rotate the encryption key; back it up separately.</li>
-<li><b>8. Basic auth / SSO in front of the editor</b> if it's reachable at all.</li>
+<li><b>6. Postgres reachable only from n8n.</b> With Docker, “localhost only” means the database port is not published at all (<code>ports:</code> omitted; n8n reaches it over the compose network by service name). Publishing <code>5432</code> — even as <code>127.0.0.1:5432:5432</code> — is a decision, not a default. Strong, non-default password either way.</li>
+<li><b>7. Two different secrets, two different rules.</b> The API keys your nodes use belong in credentials or environment variables, not pasted into workflow JSON. Separate from those is <code>N8N_ENCRYPTION_KEY</code>, the instance key that encrypts stored credentials: it is generated on first start, it must be backed up on its own (losing it means losing every stored credential), and every instance and worker must share the same value. Since n8n 3.0 a second, rotatable <i>data</i> encryption key sits under it: rotate it from <b>Settings → Data Encryption Keys</b> (on 2.x enable <code>N8N_ENV_FEAT_ENCRYPTION_KEY_ROTATION=true</code> on all instances first). Rotation is one-way — take a full database backup, and don't downgrade n8n afterwards.</li>
+<li><b>8. Authenticate at the app, not only at the proxy.</b> n8n has its own user management (owner account, member accounts); use it. Basic auth on the reverse proxy is a second lock, not a substitute — and SSO through the proxy does not give n8n per-user identity.</li>
 </ul>
 
 <h2>The part everyone skips</h2>
@@ -74,6 +74,8 @@
 
 <h2>The rule</h2>
 <p>Self-hosting moves the responsibility to you. That's the deal: you get privacy and control, you take on patching, backups, and exposure. Most "self-hosted" boxes I look at are 80% done — the last 20% is exactly the list above.</p>
+
+<p style="color:var(--mut);font-size:12.5px">Sources: n8n docs — <a href="https://docs.n8n.io/deploy/host-n8n/configure-n8n/basic-configuration/use-environment-variables/deployment/" target="_blank" rel="noopener">deployment environment variables</a> (<code>N8N_ENCRYPTION_KEY</code>, <code>N8N_LISTEN_ADDRESS</code>), <a href="https://docs.n8n.io/deploy/host-n8n/configure-n8n/security/rotate-encryption-keys/" target="_blank" rel="noopener">rotating encryption keys</a>.</p>
 
 <div class="cta"><p><b>Want it done properly?</b> I set up and harden self-hosted n8n (Docker, Postgres, HTTPS, backups with a tested restore). Fixed price, documented, async. <a href="/">See services →</a></p></div>
 

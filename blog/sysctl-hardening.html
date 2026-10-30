@@ -54,23 +54,30 @@
 <pre>kernel.kptr_restrict = 0        # kernel pointers visible in /proc
 kernel.yama.ptrace_scope = 0    # any process can ptrace another</pre>
 <p><b>kptr_restrict</b> should be <code>1</code> (or 2). At 0, kernel addresses leak through <code>/proc</code> — free information for an exploit chain.</p>
-<p><b>yama.ptrace_scope</b> should be <code>1</code>. At 0, any process running as you can attach to another (read memory, steal secrets, inject). That's how a compromised browser tab reaches your SSH agent.</p>
+<p><b>yama.ptrace_scope</b> should be <code>1</code>. At 0, any process with your UID can <code>ptrace</code> another: read its memory, steal secrets it holds, inject calls into it. Scope 1 restricts that to descendants of the caller, which is enough for debuggers and too little for a random process that lands on the box.</p>
+<p>What it does not do — worth saying, because these posts usually stop at “set it to 1”: anything with <code>CAP_SYS_PTRACE</code> (root, or a container granted that capability) attaches regardless; it narrows the same-user path, not the privileged one. And it is not a containment boundary — a process that can read the files your agent uses does not need ptrace to abuse it.</p>
+<p>This is why the SSH-agent example is worth taking seriously but not as a certainty: a compromised same-UID process <i>can</i> reach an agent socket it has permission to talk to, and ptrace makes the broader version of that easier. Whether your browser sandbox lets a tab get that far is a separate question with its own answer.</p>
 
 <h2>The two that are noise (on this box)</h2>
 <pre>net.ipv4.ip_forward = 1        # "expected 0"
 net.ipv4.conf.all.rp_filter = 0 # "expected 1"</pre>
-<p>Both were set by <b>libvirt</b> (for VM NAT), not by me. On a host running VMs or Docker, <code>ip_forward=1</code> is <i>correct</i> — flagging it is a false positive. Good hardening tools check the <i>effective</i> state <b>and</b> the context, not just the number.</p>
+<p>Both were set by the virtualization stack on that host, not by me — libvirt needs forwarding for NAT networks, and container runtimes set it too. That is why I called them noise <i>there</i>: forwarding was load-bearing.</p>
+<p>The rule is narrower than “Docker means it is fine”. <b>Forwarding is correct if something on the host needs to route packets, and wrong if nothing does.</b> A VM on a bridged network, or a host with no containers, does not need <code>ip_forward=1</code>; leaving it on is then extra surface. Same for <code>rp_filter=0</code>: container bridges and multi-homed routing sometimes need loose mode, but “a runtime is installed” is not evidence this host needs it today.</p>
+<p>So the check is neither the number nor the presence of Docker. It is: what does this host route, and is the setting the one that configuration requires? On my box the answer was yes. On the next one it may not be — which is the whole reason the tool reports provenance instead of a verdict.</p>
 
 <h2>Fix the real ones</h2>
 <pre># /etc/sysctl.d/99-hardening.conf
 kernel.kptr_restrict = 1
 kernel.yama.ptrace_scope = 1
 
-sudo sysctl --system   # apply
+sudo sysctl -p /etc/sysctl.d/99-hardening.conf   # apply one file
 sysctl -n kernel.kptr_restrict kernel.yama.ptrace_scope   # verify</pre>
+<p>It is tempting to run <code>sysctl --system</code> here. Know what it does first: it loads <b>every</b> file from <code>/etc/sysctl.d</code>, <code>/run/sysctl.d</code>, <code>/usr/local/lib/sysctl.d</code>, <code>/usr/lib/sysctl.d</code>, <code>/lib/sysctl.d</code> and <code>/etc/sysctl.conf</code> — in that order, per <code>sysctl(8)</code>. So it does not just apply your file: it re-applies whatever every package on the box has shipped, and when two files set the same key the later one wins (a file with the <i>same name</i> in a later directory is ignored instead). Values you changed by hand at runtime get reset to whatever the files say. For one change, apply one file.</p>
 
 <h2>The takeaway</h2>
 <p>A hardening checklist that fires on everything is useless — you stop reading it. What you want is: <b>what does this host actually enforce, and is that a real problem here?</b> Two real fixes beat forty warnings.</p>
+
+<p style="color:var(--mut);font-size:12.5px">Sources: <a href="https://docs.kernel.org/admin-guide/LSM/Yama.html" target="_blank" rel="noopener">kernel docs — Yama</a> (ptrace_scope levels and their limits), <code>sysctl(8)</code> for <code>--system</code> file order and precedence, <code>proc_sysctl</code>/<code>ip-sysctl</code> docs for <code>rp_filter</code> modes.</p>
 
 <div class="cta"><p><b>Want your server checked?</b> I run a read-only <a href="/">Linux Security Snapshot</a> — what's exposed, severity, top 3 fixes. If I find nothing, you don't pay.</p></div>
 

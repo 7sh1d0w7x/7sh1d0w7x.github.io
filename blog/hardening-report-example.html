@@ -48,7 +48,7 @@
 <h1>What a hardening report actually looks like (real example)</h1>
 <div class="meta">2026-10-14 · Linux hardening · 6 min read</div>
 
-<p>Most "server hardening" is sold as a list of advice. <i>Disable root login. Use keys. Set up a firewall.</i> That list is free on the internet — you don't need to pay anyone for it.</p>
+<p>The advice itself is free. <i>Disable root login. Use keys. Set up a firewall.</i> You can find that list in a hundred places, and none of it needs to be bought.</p>
 
 <p>What you actually pay for is <b>evidence</b>: proof that a specific setting on a specific machine was checked, changed, and verified.</p>
 
@@ -65,7 +65,7 @@
 <p>Section 5 is the part that is easy to skip. It is also the part that makes the rest checkable — it is where the report states what it did not cover and where its conclusions stop.</p>
 
 <h2>The example: a small container in my lab</h2>
-<p>One purpose, exposed to the internet on a non-standard SSH port. Here is the summary section, verbatim:</p>
+<p>One purpose, reachable from the internet, SSH on the default port when this snapshot was taken. Here is the summary section, verbatim:</p>
 
 <pre>BEFORE: SSH accepted passwords (brute-forceable), root login
         permitted with a key only (PermitRootLogin without-password),
@@ -110,6 +110,16 @@ table inet filter {
         type filter hook input priority 0; policy drop;</pre>
 
 <p>Note the first command. <code>sshd -T</code> does not contact a running daemon: it parses the configuration — including every <code>Include</code> — the way the daemon does at startup, and prints the values that would apply. That is what makes it better than reading the file by hand: it resolves the include chain. It is <b>not</b> proof that the running daemon has reloaded; for that, reload and test a real connection.</p>
+
+<h2>Four different things people call “verified”</h2>
+<p>“Verified” is doing a lot of work in most reports. Here is what the word can mean, weakest to strongest — and this example reaches the first two:</p>
+<pre>1. CONFIG PARSED ....... sshd -T / nft list ruleset
+                          what would apply at the next reload
+2. NEW CONNECTION ...... accept a fresh session, try a password
+                          (or a key) and watch what the server does
+3. EXTERNAL REACH ...... from another host: open, filtered or closed?
+4. REBOOT PERSISTENCE .. everything above, again, after a restart</pre>
+<p>Step 1 is what the evidence block shows. Step 2 is the reload-and-test sentence above. Step 3 needs a second machine and is not in this snapshot. Step 4 was not done for this example — no reboot — so the report does not claim it. That is the whole discipline: name the rung you are standing on, and say which ones you skipped.</p>
 
 <h2>The trap that ate an hour</h2>
 <p>This one is worth publishing because it's the kind of thing that makes a "hardened" server not actually hardened.</p>
@@ -160,6 +170,8 @@ table inet filter {
 <p>Hostnames and IPs in the example are changed, and the values come from a lab box I run for exactly this purpose. The structure, the commands and the trap are real: the drop-in override above cost me an hour and is now written into the runbook so it does not cost the next one.</p>
 
 <p>That is the whole point of doing the work in a lab before touching a production box. The mistakes are free there.</p>
+
+<p style="color:var(--mut);font-size:12.5px">Sources: <code>sshd_config(5)</code> (first value wins; drop-ins via <code>Include</code>), <code>sshd(8)</code> for <code>-T</code>; nftables wiki for <code>list ruleset</code>.</p>
 
 <p style="margin-top:34px;padding-top:18px;border-top:1px solid var(--bd)"><b>Need this done on your box?</b> <a class="u" href="/#contact">Get in touch</a> — async, no calls required. I'll tell you upfront what's in scope and what isn't.</p>
 
