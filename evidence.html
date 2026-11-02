@@ -149,8 +149,32 @@ transcript.txt: OK</pre>
   downloadable, so the diff above cannot be re-derived from this page
 · one VM, one distribution, one day</pre>
 
+<h2>A second artifact: a restore test with numbers</h2>
+<p>The same idea, applied to backups. A backup you have never restored is a hypothesis. On a lab VM I deleted the data on purpose, then restored it and compared hashes:</p>
+<pre>data ................ 80 MB, 21 files
+first backup ........ 12.8 s   (80 MB written to the repo)
+second backup ....... 8.6 s    0 B added, deduplication
+disaster ............ rm -rf /srv/appdata
+restore ............. 5.1 s    21 files back
+verification ........ 21 of 21 sha256 hashes identical</pre>
+<p>Three things went wrong on the way, and they are the useful part:</p>
+<pre>1. the first comparison said "21 differences".
+   The restore was correct. The manifests used different path
+   formats, so diff compared paths, not content. Compare hashes.
+
+2. the scheduled service failed with
+   "Fatal: /etc/restic/password does not exist".
+   A skipped step, not a broken backup. The error said it plainly.
+
+3. retention deleted nothing on the first run.
+   "keep 7 daily" preserves the oldest snapshot plus today's last,
+   and both snapshots were from today. "keep last 1" behaved as expected.</pre>
+<p>What this does <b>not</b> prove, and it is written in the report too: the repository sat on the same disk, there was no physical failure, the volume was 80 MB rather than 50 GB, and the restore test itself still runs by hand.</p>
+
 <h2>Raw files, if you want to verify rather than read</h2>
 <p>Optional: the unedited output behind the tables above, for technical review.</p>
+<p><a href="/evidence/restore-test.zip" download="restore-test-lab.zip"><b>Download restore test sample — ZIP, 4.0 KiB</b></a><br>
+<span style="color:var(--mut);font-size:13px">Report, manifest before, manifest after. 3 files.</span></p>
 <p><a href="/evidence/ulab-after.zip" download="linux-hardening-lab-evidence.zip"><b>Download lab evidence sample — ZIP, 7.2 KiB</b></a><br>
 <span style="color:var(--mut);font-size:13px">15 files, 8,129 bytes (7.9 KiB) extracted, collected 2026-10-30 from a disposable lab VM. Optional raw outputs for technical review.</span></p>
 
